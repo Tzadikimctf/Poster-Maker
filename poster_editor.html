@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עורך כרזות סייבר אינטראקטיבי</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for premium Hebrew typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Varela+Round&family=Secular+One&display=swap"
+        rel="stylesheet">
+    <!-- html2canvas for downloading PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .poster-font-title {
+            font-family: 'Secular One', 'Rubik', sans-serif;
+        }
+
+        .poster-font-sub {
+            font-family: 'Varela Round', sans-serif;
+        }
+
+        /* Hide UI controls during printing so only the poster is printed */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-area {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 210mm;
+                height: 297mm;
+                transform: none !important;
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+            }
+        }
+
+        /* Custom scrollbar for control panel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Main Header -->
+    <header
+        class="no-print bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 z-50">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-950 text-emerald-400 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">מחולל כרזות סייבר אינטראקטיבי</h1>
+                <p class="text-xs text-slate-400">התאמה אישית של כרזת הסייבר עם מנגנון מניעת חריגת טקסט</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="resetToDefaults()"
+                class="px-4 py-2 text-sm bg-slate-850 hover:bg-slate-800 hover:text-white text-slate-300 font-semibold rounded-lg border border-slate-700 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6.326L18 9.5" />
+                </svg>
+                איפוס לברירת מחדל
+            </button>
+            <button onclick="printPoster()"
+                class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                הדפסה / שמירה כ-PDF
+            </button>
+            <button onclick="downloadPNG()"
+                class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                הורדה כתמונה (PNG)
+            </button>
+        </div>
+    </header>
+
+    <!-- Main content area -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+        <!-- Left Column: Controls Sidebar -->
+        <aside
+            class="no-print w-full lg:w-[420px] bg-slate-950 border-l border-slate-800 flex flex-col h-full overflow-hidden">
+            <!-- Tabs Header -->
+            <div class="border-b border-slate-800 flex bg-slate-900/50 sticky top-0 z-10 backdrop-blur-md">
+                <button onclick="switchTab('content')" id="tab-content"
+                    class="flex-1 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition">
+                    תוכן וטקסטים
+                </button>
+                <button onclick="switchTab('design')" id="tab-design"
+                    class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    עיצוב ומידות גופן
+                </button>
+                <button onclick="switchTab('images')" id="tab-images"
+                    class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+                    תמונות ומיקום
+                </button>
+            </div>
+
+            <!-- Scrollable Tab Content Panels -->
+            <div class="flex-1 overflow-y-auto">
+            <div id="panel-content" class="p-6 space-y-6">
+                <!-- Top Callouts -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">קריאות עליונות לפעולה
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">בלון שמאלי (רקע בהיר):</label>
+                            <textarea id="input-callout-left" oninput="updatePoster()" rows="2"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">בלון ימני (רקע כהה):</label>
+                            <textarea id="input-callout-right" oninput="updatePoster()" rows="2"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Title and Topic -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">כותרת ההרצאה</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">שורת כותרת 1:</label>
+                            <input type="text" id="input-title-1" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">שורת כותרת 2:</label>
+                            <input type="text" id="input-title-2" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Date and Location Info -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">פרטי אירוע ומיקום</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">תאריך ויום:</label>
+                            <input type="text" id="input-date" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">שעות פעילות:</label>
+                            <input type="text" id="input-time" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">מיקום וחדר:</label>
+                            <input type="text" id="input-location" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Speaker Info -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">פרטי המרצה</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">שם המרצה:</label>
+                            <input type="text" id="input-speaker-name" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">תפקיד / חברה:</label>
+                            <input type="text" id="input-speaker-role" oninput="updatePoster()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: DESIGN -->
+            <div id="panel-design" class="p-6 space-y-6 hidden">
+                <!-- Scalable Font Sizes (Solves Clipping) -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        בקרת מניעת חריגת טקסט (מניעת קטיעה)
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mb-4">השתמש בסליידרים הבאים כדי להקטין/להגדיל את הגופנים ולמנוע
+                        כפילויות או קטיעות בכרזה.</p>
+
+                    <div class="space-y-4 bg-slate-900/50 p-3.5 rounded-xl border border-slate-800">
+                        <!-- Title Font Size Slider -->
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 flex justify-between">
+                                <span>גודל גופן כותרת ראשית:</span>
+                                <span id="lbl-fz-title" class="text-emerald-400 font-mono">36px</span>
+                            </label>
+                            <input type="range" id="slider-fz-title" min="20" max="48" value="36"
+                                oninput="updateLayoutSizes()" class="w-full accent-emerald-500">
+                        </div>
+
+                        <!-- Callout Font Size Slider -->
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 flex justify-between">
+                                <span>גודל גופן בלוני קריאה (עליון):</span>
+                                <span id="lbl-fz-callouts" class="text-emerald-400 font-mono">15px</span>
+                            </label>
+                            <input type="range" id="slider-fz-callouts" min="11" max="22" value="15"
+                                oninput="updateLayoutSizes()" class="w-full accent-emerald-500">
+                        </div>
+
+                        <!-- Details Font Size Slider -->
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 flex justify-between">
+                                <span>גודל גופן פרטי אירוע (אמצע):</span>
+                                <span id="lbl-fz-details" class="text-emerald-400 font-mono">19px</span>
+                            </label>
+                            <input type="range" id="slider-fz-details" min="14" max="26" value="19"
+                                oninput="updateLayoutSizes()" class="w-full accent-emerald-500">
+                        </div>
+
+                        <!-- Speaker Info Size Slider -->
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 flex justify-between">
+                                <span>גודל גופן פרטי מרצה:</span>
+                                <span id="lbl-fz-speaker" class="text-emerald-400 font-mono">22px</span>
+                            </label>
+                            <input type="range" id="slider-fz-speaker" min="15" max="30" value="22"
+                                oninput="updateLayoutSizes()" class="w-full accent-emerald-500">
+                        </div>
+
+                        <!-- Vertical Offset / Margin Spacing -->
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1 flex justify-between">
+                                <span>מיקום כותרות ופרטים (אנכי):</span>
+                                <span id="lbl-vertical-shift" class="text-emerald-400 font-mono">0px</span>
+                            </label>
+                            <input type="range" id="slider-vertical-shift" min="-40" max="40" value="0"
+                                oninput="updateLayoutSizes()" class="w-full accent-emerald-500">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">ערכות צבעים מוכנות</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="applyPresetTheme('tzadik')"
+                            class="p-2.5 bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 flex items-center justify-between">
+                            <span>לוגו צדיק (ירוק-תכלת)</span>
+                            <span class="flex gap-1">
+                                <span class="w-3 h-3 rounded-full bg-[#004124]"></span>
+                                <span class="w-3 h-3 rounded-full bg-[#71CCE7]"></span>
+                            </span>
+                        </button>
+                        <button onclick="applyPresetTheme('original')"
+                            class="p-2.5 bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-medium border border-slate-700 text-slate-300 flex items-center justify-between">
+                            <span>המקור (כחול-תכלת)</span>
+                            <span class="flex gap-1">
+                                <span class="w-3 h-3 rounded-full bg-[#0d233a]"></span>
+                                <span class="w-3 h-3 rounded-full bg-[#00b0ff]"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">התאמת צבעים אישית</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">צבע ראשי (כהה):</span>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="color-primary" oninput="updateColors()"
+                                    class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                <input type="text" id="color-primary-hex"
+                                    oninput="updateHexColor('primary', this.value)"
+                                    class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-center text-white">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">צבע משני (בהיר):</span>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="color-secondary" oninput="updateColors()"
+                                    class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                <input type="text" id="color-secondary-hex"
+                                    oninput="updateHexColor('secondary', this.value)"
+                                    class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-center text-white">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">טקסט על רקע כהה:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="color-text-on-dark" oninput="updateColors()"
+                                    class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                <input type="text" id="color-text-on-dark-hex"
+                                    oninput="updateHexColor('text-dark', this.value)"
+                                    class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-center text-white">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">טקסט על רקע בהיר:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="color-text-on-light" oninput="updateColors()"
+                                    class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                <input type="text" id="color-text-on-light-hex"
+                                    oninput="updateHexColor('text-light', this.value)"
+                                    class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-center text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Typography Options -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">סגנון גופן</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <select id="select-font" onchange="updateFont(this.value)"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                                <option value="font-secular">Secular One (דומיננטי ורחב)</option>
+                                <option value="font-varela">Varela Round (מעוגל ונקי)</option>
+                                <option value="font-rubik">Rubik (מודרני וטכנולוגי)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: IMAGES -->
+            <div id="panel-images" class="p-6 space-y-6 hidden">
+                <!-- Branding & Logo Position -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">מיקום לוגו המותג</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">הצגת לוגו:</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-logo" checked onchange="updateLogoVisibility()"
+                                    class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-300">רקע לבן ללוגו:</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-logo-bg" onchange="updateLogoBackground()"
+                                    class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600">
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">מיקום לוגו:</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setLogoPosition('top-left')" id="btn-logo-top-left"
+                                    class="py-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">שמאל
+                                    למעלה</button>
+                                <button onclick="setLogoPosition('top-right')" id="btn-logo-top-right"
+                                    class="py-2 bg-slate-900 border border-emerald-500 rounded text-xs text-white">ימין
+                                    למעלה</button>
+                                <button onclick="setLogoPosition('bottom-left')" id="btn-logo-bottom-left"
+                                    class="py-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">שמאל
+                                    למטה</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">גודל לוגו (פיקסלים):</label>
+                            <input type="range" id="logo-size" min="40" max="150" value="95"
+                                oninput="updateLogoScale(this.value)" class="w-full accent-emerald-500">
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>40px</span>
+                                <span id="logo-size-lbl">95px</span>
+                                <span>150px</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">העלאת לוגו מותג חלופי:</label>
+                            <input type="file" accept="image/*" onchange="handleLogoUpload(event)"
+                                class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-950 file:text-emerald-400 hover:file:bg-emerald-900 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Speaker Avatar Position/Zoom controls -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 font-semibold">התאמת תמונת
+                        מרצה (מתוך image_6ca388.jpg)</h3>
+                    <p class="text-[11px] text-slate-500 mb-3">משוך והזז את הסליידרים כדי למרכז בצורה מושלמת את פני
+                        המרצה מתוך כרזת המקור.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">העלאת תמונת מרצה מותאמת אישית:</label>
+                            <input type="file" accept="image/*" onchange="handleSpeakerUpload(event)"
+                                class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-950 file:text-emerald-400 hover:file:bg-emerald-900 cursor-pointer mb-2">
+                            <button onclick="restoreOriginalSpeakerPreset()"
+                                class="w-full py-1.5 bg-slate-900 border border-slate-700 hover:bg-slate-800 rounded text-xs text-slate-300">חזרה
+                                לתמונת מקור מעובדת</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">זום תמונה (%):</label>
+                            <input type="range" id="avatar-zoom" min="100" max="800" value="440"
+                                oninput="updateAvatarAdjustment()" class="w-full accent-emerald-500">
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>100%</span>
+                                <span id="zoom-lbl">440%</span>
+                                <span>800%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">מיקום אופקי (X):</label>
+                            <input type="range" id="avatar-x" min="-400" max="100" value="-154"
+                                oninput="updateAvatarAdjustment()" class="w-full accent-emerald-500">
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>שמאלה</span>
+                                <span id="x-lbl">-154px</span>
+                                <span>ימינה</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">מיקום אנכי (Y):</label>
+                            <input type="range" id="avatar-y" min="-600" max="100" value="-386"
+                                oninput="updateAvatarAdjustment()" class="w-full accent-emerald-500">
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>למעלה</span>
+                                <span id="y-lbl">-386px</span>
+                                <span>למטה</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Sticky Footer: Reset Button -->
+            <div class="border-t border-slate-800 p-4 bg-slate-950/90 backdrop-blur-md z-10 flex-shrink-0">
+                <button onclick="resetToDefaults()"
+                    class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-slate-300 font-semibold rounded-lg border border-slate-700 transition flex items-center justify-center gap-2 text-sm shadow-inner shadow-black/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6.326L18 9.5" />
+                    </svg>
+                    חזרה להגדרות ברירת מחדל (איפוס)
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Column: Interactive Poster Canvas -->
+        <main class="flex-1 bg-slate-900 p-4 md:p-8 flex items-center justify-center overflow-auto">
+            <!-- Poster Frame (Maintains ~1:1.414 aspect ratio - standard A4) -->
+            <div class="relative shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 border border-slate-800/50 print-area"
+                id="cyber-poster" style="width: 595px; height: 842px; background-color: #004124;">
+
+                <!-- SVG Curves & Background Design - Fully dynamic colored paths -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 595 842" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <!-- Top Left curved callout background (Enhanced curve coordinates to prevent spilling) -->
+                    <path id="svg-bg-top-left" d="M0 0H290C290 0 310 90 275 160C240 220 145 200 0 200V0Z"
+                        fill="#71CCE7" />
+                    <!-- Right bulging graphic backdrop curve -->
+                    <path id="svg-bg-mid-right" d="M595 180C510 180 440 250 440 360C440 470 520 500 595 520V180Z"
+                        fill="#71CCE7" fill-opacity="1" />
+                    <!-- Bottom Right corner swoosh back of speaker avatar -->
+                    <path id="svg-bg-bottom-right" d="M595 520C470 520 370 620 370 730C370 780 395 815 425 842H595V520Z"
+                        fill="#71CCE7" />
+                </svg>
+
+                <!-- Brand Logo Element - Absolute positioning over entire canvas layout (Z-30) -->
+                <div id="poster-logo-container" class="absolute z-30 transition-all duration-200"
+                    style="display: block;">
+                    <!-- Image loader for local file -->
+                    <img id="poster-logo" src="Biu_tzadik_nobackground.png" alt="לוגו" class="object-contain"
+                        style="width: 95px; height: auto;" onerror="handleLogoError(this)">
+                    <!-- Robust Interactive SVG Fallback (Exact matches of Biu_tzadik logo branding) -->
+                    <div id="poster-logo-svg-fallback" class="hidden" style="width: 95px; height: 95px;">
+                        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            <!-- Blue rectangular block at bottom-left -->
+                            <rect x="94" y="272" width="135" height="58" rx="16" fill="#71CCE7"
+                                class="logo-fallback-accent" />
+                            <!-- Connected nodes of the "צ" letter -->
+                            <!-- Left branch -->
+                            <rect x="81" y="81" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <rect x="126" y="126" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <rect x="171" y="171" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <!-- Central trunk connector -->
+                            <rect x="171" y="216" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <!-- Right branch -->
+                            <rect x="299" y="81" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <rect x="254" y="126" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <rect x="211" y="171" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <!-- Bottom Right Hook -->
+                            <rect x="211" y="216" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                            <rect x="211" y="254" width="57" height="57" rx="16" fill="#004124"
+                                class="logo-fallback-primary" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Inner Content Container overlayed on SVGs with bulletproof padding and flexible layouts -->
+                <div class="absolute inset-0 p-8 flex flex-col justify-between select-none z-10">
+
+                    <!-- Top Header Section (Two-column callouts - with dynamic padding to adjust for Logo) -->
+                    <div id="poster-header-section" class="flex justify-between items-start pt-2 gap-4">
+                        <!-- Left Callout Box (Light BG, Dark text) -->
+                        <div id="container-callout-left" class="w-[230px] pr-2 text-right transition-all">
+                            <p id="poster-callout-left"
+                                class="text-slate-900 text-[15px] font-bold leading-snug tracking-tight break-words">
+                                או סתם ללמוד איך האקרים חושבים ופועלים
+                            </p>
+                        </div>
+
+                        <!-- Right Callout Box (Dark BG, Light text) -->
+                        <div id="container-callout-right" class="w-[240px] pl-3 text-right transition-all">
+                            <p id="poster-callout-right"
+                                class="text-black text-[15px] font-bold leading-snug tracking-tight break-words">
+                                בואו לרכוש ידע שיכול להיות רלוונטי לקריירה שלכם!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Middle Content Section (Titles & Event Information - safely aligned & customizable) -->
+                    <div id="poster-mid-section" class="flex-1 flex flex-col justify-center pr-2 mt-2 transition-all"
+                        style="margin-top: 0px;">
+
+                        <!-- Main Topic & Title (Safeguarded against long values with break-word and adjustable size) -->
+                        <div class="mb-10 text-right">
+                            <h2 id="poster-title-1"
+                                class="poster-font-title text-black text-[36px] font-extrabold tracking-wide leading-tight drop-shadow-sm break-words">
+                                מבוא לסייבר:
+                            </h2>
+                            <h2 id="poster-title-2"
+                                class="poster-font-title text-black text-[34px] font-extrabold tracking-wide leading-tight mt-1 drop-shadow-sm break-words">
+                                וירוסים ועד קריירות
+                            </h2>
+                        </div>
+
+                        <!-- Info details box (Date, Time, Location) -->
+                        <div id="poster-details-container" class="space-y-3.5 text-right pr-1">
+                            <!-- Date -->
+                            <div class="flex items-center justify-start flex-row-reverse gap-3">
+                                <span id="poster-date"
+                                    class="poster-font-sub text-black text-[19px] font-bold tracking-normal break-words">
+                                    יום חמישי, 25.12.2025
+                                </span>
+                            </div>
+                            <!-- Time -->
+                            <div class="flex items-center justify-start flex-row-reverse gap-3">
+                                <span id="poster-time"
+                                    class="poster-font-sub text-black text-[19px] font-bold tracking-normal break-words">
+                                    14:00-15:00
+                                </span>
+                            </div>
+                            <!-- Location -->
+                            <div class="flex items-center justify-start flex-row-reverse gap-3">
+                                <span id="poster-location"
+                                    class="poster-font-sub text-black text-[17px] font-bold tracking-normal break-words">
+                                    בניין 503 (מדע״ח) חדר 226
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Footer Section (Speaker Info and Avatar) -->
+                    <div class="relative h-[180px] flex items-end justify-between">
+
+                        <!-- Left Aligned Speaker Details -->
+                        <div class="mb-4 text-right flex-1 pr-2 max-w-[340px]">
+                            <h3 id="poster-speaker-name"
+                                class="poster-font-title text-black text-[22px] font-bold tracking-wide break-words">
+                                יאיר אולמייב
+                            </h3>
+                            <p id="poster-speaker-role"
+                                class="poster-font-sub text-black text-[13px] font-medium tracking-wide mt-1 break-words">
+                                Senior Security Researcher @ CYE
+                            </p>
+                        </div>
+
+                        <!-- Right Aligned Circular Speaker Portrait -->
+                        <div
+                            class="relative w-[150px] h-[150px] rounded-full border-4 border-[#004124] bg-[#004124] shadow-xl overflow-hidden z-10 flex-shrink-0">
+                            <!-- Zoom/Pan relative cropping frame -->
+                            <div class="absolute inset-0 w-full h-full overflow-hidden rounded-full">
+                                <img id="poster-speaker-img" src="image_6ca388.jpg" alt="מרצה"
+                                    class="absolute max-w-none origin-top-left"
+                                    style="width: 440%; left: -154px; top: -386px;"
+                                    onerror="this.src='https://placehold.co/300x300/004124/71CCE7?text=Yair'">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Editor Logic & Dynamic State Handler -->
+    <script>
+        // Preset Colors & Theme Data
+        const THEMES = {
+            tzadik: {
+                primary: '#004124',    // Deep Pine Green
+                secondary: '#71CCE7',  // Logo Cyber Sky Blue
+                textDark: '#0f2219',   // Very dark green for light areas
+                textLight: '#000000'   // Black for deep areas
+            },
+            original: {
+                primary: '#091e36',    // Deep Dark Navy
+                secondary: '#00b0ff',  // Bright Cyan
+                textDark: '#081c33',   // Deep dark navy
+                textLight: '#000000'   // Black for deep areas
+            }
+        };
+
+        // Initial default poster configuration
+        const DEFAULTS = {
+            calloutLeft: 'או סתם ללמוד איך האקרים חושבים ופועלים',
+            calloutRight: 'בואו לרכוש ידע שיכול להיות רלוונטי לקריירה שלכם!',
+            title1: 'מבוא לסייבר:',
+            title2: 'וירוסים ועד קריירות',
+            date: 'יום חמישי, 25.12.2025',
+            time: '14:00-15:00',
+            location: 'בניין 503 (מדע״ח) חדר 226',
+            speakerName: 'יאיר אולמייב',
+            speakerRole: 'Senior Security Researcher @ CYE',
+            theme: 'tzadik',
+            logoVisible: true,
+            logoBg: false,
+            logoPosition: 'top-right',
+            logoSize: 95,
+            avatarZoom: 440,
+            avatarX: -154,
+            avatarY: -386,
+            speakerImgSrc: 'image_6ca388.jpg',
+            logoImgSrc: 'Biu_tzadik_nobackground.png',
+            fzTitle: 36,
+            fzCallouts: 15,
+            fzDetails: 19,
+            fzSpeaker: 22,
+            verticalShift: 0
+        };
+
+        // UI Tab Management
+        function switchTab(tabId) {
+            // Hide all panels
+            document.getElementById('panel-content').classList.add('hidden');
+            document.getElementById('panel-design').classList.add('hidden');
+            document.getElementById('panel-images').classList.add('hidden');
+
+            // Remove active button styles
+            document.getElementById('tab-content').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+            document.getElementById('tab-design').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+            document.getElementById('tab-images').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+
+            // Show current
+            document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).className = "flex-1 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition";
+        }
+
+        // Apply pre-designed corporate colors
+        function applyPresetTheme(themeKey) {
+            const theme = THEMES[themeKey];
+            if (!theme) return;
+
+            document.getElementById('color-primary').value = theme.primary;
+            document.getElementById('color-secondary').value = theme.secondary;
+            document.getElementById('color-text-on-dark').value = theme.textLight;
+            document.getElementById('color-text-on-light').value = theme.textDark;
+
+            // Sync Hex text inputs
+            document.getElementById('color-primary-hex').value = theme.primary;
+            document.getElementById('color-secondary-hex').value = theme.secondary;
+            document.getElementById('color-text-on-dark-hex').value = theme.textLight;
+            document.getElementById('color-text-on-light-hex').value = theme.textDark;
+
+            updateColors();
+        }
+
+        // Sync Hex code updates
+        function updateHexColor(type, value) {
+            if (/^#[0-9A-F]{6}$/i.test(value)) {
+                if (type === 'primary') document.getElementById('color-primary').value = value;
+                if (type === 'secondary') document.getElementById('color-secondary').value = value;
+                if (type === 'text-dark') document.getElementById('color-text-on-dark').value = value;
+                if (type === 'text-light') document.getElementById('color-text-on-light').value = value;
+                updateColors();
+            }
+        }
+
+        // Dynamically update background SVGs and Text blocks with brand colors
+        function updateColors() {
+            const primary = document.getElementById('color-primary').value;
+            const secondary = document.getElementById('color-secondary').value;
+            const textDark = document.getElementById('color-text-on-light').value;
+            const textLight = document.getElementById('color-text-on-dark').value;
+
+            // Update SVG background vector nodes
+            document.getElementById('cyber-poster').style.backgroundColor = primary;
+            document.getElementById('svg-bg-top-left').setAttribute('fill', secondary);
+            document.getElementById('svg-bg-mid-right').setAttribute('fill', secondary);
+            document.getElementById('svg-bg-bottom-right').setAttribute('fill', secondary);
+
+            // Update Typography Colors
+            document.getElementById('poster-callout-left').style.color = textDark;
+            document.getElementById('poster-callout-right').style.color = textLight;
+            document.getElementById('poster-title-1').style.color = textLight;
+            document.getElementById('poster-title-2').style.color = textLight;
+            document.getElementById('poster-date').style.color = textLight;
+            document.getElementById('poster-time').style.color = textLight;
+            document.getElementById('poster-location').style.color = textLight;
+            document.getElementById('poster-speaker-name').style.color = textLight;
+            document.getElementById('poster-speaker-role').style.color = textLight;
+
+            // Update border colors dynamically on the speaker circle frame
+            const avatarCircle = document.getElementById('poster-speaker-img').closest('.rounded-full');
+            if (avatarCircle) {
+                avatarCircle.style.borderColor = primary;
+                avatarCircle.style.backgroundColor = primary;
+            }
+
+            // Sync colors to the inline vector SVG fallback logo
+            document.querySelectorAll('.logo-fallback-primary').forEach(el => {
+                el.setAttribute('fill', primary);
+            });
+            document.querySelectorAll('.logo-fallback-accent').forEach(el => {
+                el.setAttribute('fill', secondary);
+            });
+        }
+
+        // Handle image error / loading failures elegantly
+        function handleLogoError(img) {
+            img.style.display = 'none';
+            document.getElementById('poster-logo-svg-fallback').classList.remove('hidden');
+        }
+
+        // Dynamic Text Updates
+        function updatePoster() {
+            document.getElementById('poster-callout-left').innerText = document.getElementById('input-callout-left').value;
+            document.getElementById('poster-callout-right').innerText = document.getElementById('input-callout-right').value;
+            document.getElementById('poster-title-1').innerText = document.getElementById('input-title-1').value;
+            document.getElementById('poster-title-2').innerText = document.getElementById('input-title-2').value;
+            document.getElementById('poster-date').innerText = document.getElementById('input-date').value;
+            document.getElementById('poster-time').innerText = document.getElementById('input-time').value;
+            document.getElementById('poster-location').innerText = document.getElementById('input-location').value;
+            document.getElementById('poster-speaker-name').innerText = document.getElementById('input-speaker-name').value;
+            document.getElementById('poster-speaker-role').innerText = document.getElementById('input-speaker-role').value;
+        }
+
+        // Update font sizes and alignment to prevent clipping
+        function updateLayoutSizes() {
+            const fzTitle = document.getElementById('slider-fz-title').value;
+            const fzCallouts = document.getElementById('slider-fz-callouts').value;
+            const fzDetails = document.getElementById('slider-fz-details').value;
+            const fzSpeaker = document.getElementById('slider-fz-speaker').value;
+            const verticalShift = document.getElementById('slider-vertical-shift').value;
+
+            // Update labels
+            document.getElementById('lbl-fz-title').innerText = fzTitle + 'px';
+            document.getElementById('lbl-fz-callouts').innerText = fzCallouts + 'px';
+            document.getElementById('lbl-fz-details').innerText = fzDetails + 'px';
+            document.getElementById('lbl-fz-speaker').innerText = fzSpeaker + 'px';
+            document.getElementById('lbl-vertical-shift').innerText = verticalShift + 'px';
+
+            // Apply to poster elements
+            document.getElementById('poster-title-1').style.fontSize = fzTitle + 'px';
+            document.getElementById('poster-title-2').style.fontSize = (fzTitle - 2) + 'px'; // keeps hierarchy proportional
+
+            document.getElementById('poster-callout-left').style.fontSize = fzCallouts + 'px';
+            document.getElementById('poster-callout-right').style.fontSize = fzCallouts + 'px';
+
+            document.getElementById('poster-date').style.fontSize = fzDetails + 'px';
+            document.getElementById('poster-time').style.fontSize = fzDetails + 'px';
+            document.getElementById('poster-location').style.fontSize = (fzDetails - 2) + 'px';
+
+            document.getElementById('poster-speaker-name').style.fontSize = fzSpeaker + 'px';
+
+            // Apply Vertical Shift to Middle Section
+            document.getElementById('poster-mid-section').style.marginTop = verticalShift + 'px';
+        }
+
+        // Font family switcher
+        function updateFont(fontClass) {
+            const title1 = document.getElementById('poster-title-1');
+            const title2 = document.getElementById('poster-title-2');
+            const name = document.getElementById('poster-speaker-name');
+
+            // Reset
+            title1.className = title1.className.replace(/poster-font-\w+/g, '');
+            title2.className = title2.className.replace(/poster-font-\w+/g, '');
+            name.className = name.className.replace(/poster-font-\w+/g, '');
+
+            let appliedClass = 'poster-font-title';
+            if (fontClass === 'font-varela') appliedClass = 'poster-font-sub';
+            if (fontClass === 'font-rubik') appliedClass = ''; // standard rubik
+
+            title1.classList.add(appliedClass);
+            title2.classList.add(appliedClass);
+            name.classList.add(appliedClass);
+        }
+
+        // Logo Layout Positioning Strategy (positions logo on global canvas coordinates)
+        let currentLogoPosition = 'top-right';
+
+        function setLogoPosition(pos) {
+            currentLogoPosition = pos;
+            const logoCont = document.getElementById('poster-logo-container');
+            const leftCalloutContainer = document.getElementById('container-callout-left');
+            const rightCalloutContainer = document.getElementById('container-callout-right');
+            const headerSection = document.getElementById('poster-header-section');
+
+            // Highlight active control button
+            document.getElementById('btn-logo-top-left').className = "py-2 bg-slate-900 border border-slate-700 rounded text-xs text-white";
+            document.getElementById('btn-logo-top-right').className = "py-2 bg-slate-900 border border-slate-700 rounded text-xs text-white";
+            document.getElementById('btn-logo-bottom-left').className = "py-2 bg-slate-900 border border-slate-700 rounded text-xs text-white";
+
+            document.getElementById(`btn-logo-${pos}`).className = "py-2 bg-slate-900 border border-emerald-500 rounded text-xs text-white";
+
+            // Reset custom layout spacing modifications to avoid overlapping
+            leftCalloutContainer.style.paddingLeft = '0px';
+            rightCalloutContainer.style.paddingRight = '0px';
+            leftCalloutContainer.style.marginLeft = '0px';
+            rightCalloutContainer.style.marginRight = '0px';
+            headerSection.style.paddingTop = '8px';
+
+            // Reposition absolute container inside poster
+            logoCont.className = "absolute transition-all duration-200 z-30";
+
+            // Get dynamic offset based on current logo size + background padding + generous safety margin (24px)
+            const logoSize = parseInt(document.getElementById('logo-size').value) || 95;
+            const logoBgEl = document.getElementById('toggle-logo-bg');
+            const extraPadding = (logoBgEl && logoBgEl.checked) ? 16 : 0;
+            const dynamicOffset = (logoSize + extraPadding + 24) + 'px';
+
+            if (pos === 'top-left') {
+                logoCont.style.top = '32px';
+                logoCont.style.left = '32px';
+                logoCont.style.bottom = 'auto';
+                logoCont.style.right = 'auto';
+
+                // Shift the left callout physically to the right to completely avoid overlapping
+                leftCalloutContainer.style.marginLeft = dynamicOffset;
+                headerSection.style.paddingTop = '24px';
+            } else if (pos === 'top-right') {
+                logoCont.style.top = '32px';
+                logoCont.style.right = '32px';
+                logoCont.style.bottom = 'auto';
+                logoCont.style.left = 'auto';
+
+                // Shift the right callout physically to the left to safely avoid overlapping
+                rightCalloutContainer.style.marginRight = dynamicOffset;
+                headerSection.style.paddingTop = '24px';
+            } else if (pos === 'bottom-left') {
+                logoCont.style.bottom = '32px';
+                logoCont.style.left = '32px';
+                logoCont.style.top = 'auto';
+                logoCont.style.right = 'auto';
+            }
+        }
+
+        // Dynamic Scaling for Brand Logo
+        function updateLogoScale(size) {
+            document.getElementById('logo-size-lbl').innerText = size + 'px';
+            document.getElementById('poster-logo').style.width = size + 'px';
+            document.getElementById('poster-logo-svg-fallback').style.width = size + 'px';
+            document.getElementById('poster-logo-svg-fallback').style.height = size + 'px';
+
+            // Re-apply padding layout adjustments dynamically based on the new size
+            setLogoPosition(currentLogoPosition);
+        }
+
+        // Logo Visibility Toggle
+        function updateLogoVisibility() {
+            const visible = document.getElementById('toggle-logo').checked;
+            document.getElementById('poster-logo-container').style.display = visible ? 'block' : 'none';
+        }
+
+        // Logo Background Toggle
+        function updateLogoBackground() {
+            const hasBg = document.getElementById('toggle-logo-bg').checked;
+            const logoCont = document.getElementById('poster-logo-container');
+            if (hasBg) {
+                logoCont.style.backgroundColor = '#ffffff';
+                logoCont.style.padding = '8px';
+                logoCont.style.borderRadius = '12px';
+                logoCont.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+            } else {
+                logoCont.style.backgroundColor = 'transparent';
+                logoCont.style.padding = '0px';
+                logoCont.style.borderRadius = '0px';
+                logoCont.style.boxShadow = 'none';
+            }
+            
+            // Re-apply positioning to dynamically adjust margin padding for dynamicOffset!
+            setLogoPosition(currentLogoPosition);
+        }
+
+        // Handle Custom Logo Upload
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('poster-logo');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('poster-logo-svg-fallback').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Recenter / Crop values for Speaker Photo Frame
+        function updateAvatarAdjustment() {
+            const zoom = document.getElementById('avatar-zoom').value;
+            const x = document.getElementById('avatar-x').value;
+            const y = document.getElementById('avatar-y').value;
+
+            document.getElementById('zoom-lbl').innerText = zoom + '%';
+            document.getElementById('x-lbl').innerText = x + 'px';
+            document.getElementById('y-lbl').innerText = y + 'px';
+
+            const img = document.getElementById('poster-speaker-img');
+            img.style.width = zoom + '%';
+            img.style.left = x + 'px';
+            img.style.top = y + 'px';
+        }
+
+        // Handle Speaker Custom Portrait Image Upload
+        function handleSpeakerUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('poster-speaker-img');
+                    img.src = e.target.result;
+                    // Reset cropping adjustments so uploading user gets a standard view
+                    document.getElementById('avatar-zoom').value = 100;
+                    document.getElementById('avatar-x').value = 0;
+                    document.getElementById('avatar-y').value = 0;
+                    updateAvatarAdjustment();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Restore original image with the predefined Yair face crop settings
+        function restoreOriginalSpeakerPreset() {
+            const img = document.getElementById('poster-speaker-img');
+            img.src = DEFAULTS.speakerImgSrc;
+            document.getElementById('avatar-zoom').value = DEFAULTS.avatarZoom;
+            document.getElementById('avatar-x').value = DEFAULTS.avatarX;
+            document.getElementById('avatar-y').value = DEFAULTS.avatarY;
+            updateAvatarAdjustment();
+        }
+
+        // Reset whole app to standard defaults
+        function resetToDefaults() {
+            // Reset visibility of images
+            document.getElementById('poster-logo').style.display = 'block';
+            document.getElementById('poster-logo-svg-fallback').classList.add('hidden');
+
+            // Text values
+            document.getElementById('input-callout-left').value = DEFAULTS.calloutLeft;
+            document.getElementById('input-callout-right').value = DEFAULTS.calloutRight;
+            document.getElementById('input-title-1').value = DEFAULTS.title1;
+            document.getElementById('input-title-2').value = DEFAULTS.title2;
+            document.getElementById('input-date').value = DEFAULTS.date;
+            document.getElementById('input-time').value = DEFAULTS.time;
+            document.getElementById('input-location').value = DEFAULTS.location;
+            document.getElementById('input-speaker-name').value = DEFAULTS.speakerName;
+            document.getElementById('input-speaker-role').value = DEFAULTS.speakerRole;
+
+            // Font Sizes Sliders
+            document.getElementById('slider-fz-title').value = DEFAULTS.fzTitle;
+            document.getElementById('slider-fz-callouts').value = DEFAULTS.fzCallouts;
+            document.getElementById('slider-fz-details').value = DEFAULTS.fzDetails;
+            document.getElementById('slider-fz-speaker').value = DEFAULTS.fzSpeaker;
+            document.getElementById('slider-vertical-shift').value = DEFAULTS.verticalShift;
+
+            // Visual elements
+            document.getElementById('toggle-logo').checked = DEFAULTS.logoVisible;
+            document.getElementById('toggle-logo-bg').checked = DEFAULTS.logoBg;
+            document.getElementById('logo-size').value = DEFAULTS.logoSize;
+            document.getElementById('poster-logo').src = DEFAULTS.logoImgSrc;
+
+            // Color theme
+            applyPresetTheme(DEFAULTS.theme);
+
+            // Positioning
+            setLogoPosition(DEFAULTS.logoPosition);
+            updateLogoScale(DEFAULTS.logoSize);
+            updateLogoVisibility();
+            updateLogoBackground();
+
+            // Speaker original preset
+            restoreOriginalSpeakerPreset();
+            updatePoster();
+            updateLayoutSizes();
+        }
+
+        // Export poster to PNG File
+        function downloadPNG() {
+            const poster = document.getElementById('cyber-poster');
+
+            // Show processing alert message box rather than alert()
+            const msgBox = document.createElement('div');
+            msgBox.className = "fixed inset-0 bg-black/75 z-50 flex items-center justify-center text-white text-lg font-semibold dir-rtl no-print";
+            msgBox.innerHTML = `
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center gap-4 max-w-sm text-center">
+                    <svg class="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>מייצר קובץ תמונה באיכות גבוהה... נא להמתין</span>
+                </div>
+            `;
+            document.body.appendChild(msgBox);
+
+            // Use html2canvas to capture vector details correctly
+            html2canvas(poster, {
+                scale: 2.5, // Enhances print DPI density
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Cyber_Poster_${document.getElementById('input-speaker-name').value.replace(/\s+/g, '_')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                msgBox.remove();
+            }).catch(err => {
+                msgBox.remove();
+                console.error("PNG export error:", err);
+            });
+        }
+
+        // Printer & Native PDF Exporter
+        function printPoster() {
+            window.print();
+        }
+
+        // Kick off on load
+        window.onload = function () {
+            resetToDefaults();
+        }
+    </script>
+</body>
+
+</html>
