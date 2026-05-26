@@ -1,0 +1,54 @@
+body {
+    font-family: 'Rubik', sans-serif;
+}
+
+.poster-font-title {
+    font-family: 'Secular One', 'Rubik', sans-serif;
+}
+
+.poster-font-sub {
+    font-family: 'Varela Round', sans-serif;
+}
+
+/* Hide UI controls during printing so only the poster is printed */
+@media print {
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 210mm;
+        height: 297mm;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+    }
+}
+
+/* Custom scrollbar for control panel */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
