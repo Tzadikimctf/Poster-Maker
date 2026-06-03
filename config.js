@@ -120,7 +120,7 @@ const UI_TRANSLATIONS = {
         "tab-design": "עיצוב ומידות גופן",
         "tab-images": "תמונות ומיקום",
         "tab-presets": "ערכות שמורות",
-        
+
         // Tab Content
         "sec-callouts": "קריאות עליונות לפעולה",
         "lbl-callout-left": "בלון שמאלי (רקע בהיר):",
@@ -233,7 +233,7 @@ const UI_TRANSLATIONS = {
         "tab-design": "Design & Fonts",
         "tab-images": "Images & Alignment",
         "tab-presets": "Saved Presets",
-        
+
         // Tab Content
         "sec-callouts": "Top Callouts to Action",
         "lbl-callout-left": "Left Bubble (Light Background):",

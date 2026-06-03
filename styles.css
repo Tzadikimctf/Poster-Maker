@@ -22,6 +22,20 @@ body {
         display: none !important;
     }
 
+    /* Remove the scale wrapper transform so the poster prints at full A4 size */
+    #poster-scale-wrapper {
+        transform: none !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    /* Ensure the main canvas container doesn't clip or restrict the poster */
+    main {
+        overflow: visible !important;
+        height: auto !important;
+        padding: 0 !important;
+    }
+
     .print-area {
         position: absolute;
         top: 0;
@@ -31,6 +45,7 @@ body {
         transform: none !important;
         box-shadow: none !important;
         border: none !important;
+        border-radius: 0 !important;
         margin: 0 !important;
     }
 }

@@ -1081,6 +1081,7 @@ function resetToDefaults() {
 // Export poster to PNG File
 function downloadPNG() {
     const poster = document.getElementById('cyber-poster');
+    const scaleWrapper = document.getElementById('poster-scale-wrapper');
 
     // Show processing alert message box rather than alert()
     const msgBox = document.createElement('div');
@@ -1098,8 +1099,25 @@ function downloadPNG() {
         msgBox.querySelector('span').textContent = "Generating high-quality image file... Please wait";
     }
 
+    // Temporarily remove scale transform so html2canvas captures at true 595x842 size
+    const savedTransform = scaleWrapper ? scaleWrapper.style.transform : '';
+    const savedOrigin = scaleWrapper ? scaleWrapper.style.transformOrigin : '';
+    if (scaleWrapper) {
+        scaleWrapper.style.transform = 'none';
+        scaleWrapper.style.transformOrigin = '';
+    }
+
+    // Remove rounded corners and border for clean export
+    const savedBorderRadius = poster.style.borderRadius;
+    const savedBorder = poster.style.border;
+    poster.style.borderRadius = '0';
+    poster.style.border = 'none';
+    poster.classList.remove('rounded-2xl');
+
     // Use html2canvas to capture vector details correctly
     html2canvas(poster, {
+        width: 595,
+        height: 842,
         scale: 2.5, // Enhances print DPI density
         useCORS: true,
         allowTaint: true,
@@ -1113,12 +1131,39 @@ function downloadPNG() {
     }).catch(err => {
         msgBox.remove();
         console.error("PNG export error:", err);
+    }).finally(() => {
+        // Restore scale transform and styling
+        if (scaleWrapper) {
+            scaleWrapper.style.transform = savedTransform;
+            scaleWrapper.style.transformOrigin = savedOrigin;
+        }
+        poster.style.borderRadius = savedBorderRadius;
+        poster.style.border = savedBorder;
+        poster.classList.add('rounded-2xl');
+        adjustPosterScale();
     });
 }
 
 // Printer & Native PDF Exporter
 function printPoster() {
+    const scaleWrapper = document.getElementById('poster-scale-wrapper');
+
+    // Temporarily remove scale transform for accurate print sizing
+    const savedTransform = scaleWrapper ? scaleWrapper.style.transform : '';
+    const savedOrigin = scaleWrapper ? scaleWrapper.style.transformOrigin : '';
+    if (scaleWrapper) {
+        scaleWrapper.style.transform = 'none';
+        scaleWrapper.style.transformOrigin = '';
+    }
+
     window.print();
+
+    // Restore transform after the print dialog closes
+    if (scaleWrapper) {
+        scaleWrapper.style.transform = savedTransform;
+        scaleWrapper.style.transformOrigin = savedOrigin;
+        adjustPosterScale();
+    }
 }
 
 // IndexedDB helper functions to persist directory handles
