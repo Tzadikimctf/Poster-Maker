@@ -1,0 +1,5 @@
+BACKGROUND_STYLES.diagonal = {
+    topLeftD: "M0 0H350L0 350V0Z",
+    midRightD: "M595 240L420 415L595 590V240Z",
+    bottomRightD: "M595 590L342 842H595V590Z"
+};

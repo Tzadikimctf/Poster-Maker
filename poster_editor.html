@@ -234,7 +234,34 @@
                                 <button onclick="applyBackgroundStyle('stripes')" id="btn-bg-style-stripes" class="bg-style-btn p-2.5 bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-semibold border border-slate-700 text-slate-300 transition" data-i18n="btn-style-stripes">
                                     סגנון פסים
                                 </button>
+                                <button onclick="applyBackgroundStyle('custom')" id="btn-bg-style-custom" data-testid="btn-bg-style-custom" class="bg-style-btn p-2.5 bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-semibold border border-slate-700 text-slate-300 transition" data-i18n="btn-style-custom">
+                                    רקע מותאם אישית
+                                </button>
                             </div>
+                            
+                            <!-- Custom SVG Background Paths Creator -->
+                            <div id="section-custom-bg" class="hidden space-y-3 bg-slate-900/50 p-3.5 rounded-lg border border-slate-800/85 mt-3 shadow-inner shadow-black/30">
+                                <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5" data-i18n="sec-custom-bg-paths">סגנון רקע מותאם אישית (SVG Paths)</h4>
+                                <p class="text-[10px] text-slate-400" data-i18n="lbl-custom-bg-desc">הזן קואורדינטות SVG (d attribute) עבור צורות הרקע של הכרזה:</p>
+                                <div class="space-y-2.5">
+                                    <div>
+                                        <label class="block text-[10px] text-slate-400 mb-0.5" data-i18n="lbl-custom-bg-tl">צורת שמאל למעלה (Top-Left Shape):</label>
+                                        <input type="text" id="input-custom-bg-tl" data-testid="input-custom-bg-tl" placeholder="e.g. M0 0H200V200Z" class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                     </div>
+                                     <div>
+                                         <label class="block text-[10px] text-slate-400 mb-0.5" data-i18n="lbl-custom-bg-mr">צורת ימין אמצע (Mid-Right Shape):</label>
+                                         <input type="text" id="input-custom-bg-mr" data-testid="input-custom-bg-mr" placeholder="e.g. M595 200H450V400H595Z" class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                     </div>
+                                     <div>
+                                         <label class="block text-[10px] text-slate-400 mb-0.5" data-i18n="lbl-custom-bg-br">צורת ימין למטה (Bottom-Right Shape):</label>
+                                         <input type="text" id="input-custom-bg-br" data-testid="input-custom-bg-br" placeholder="e.g. M595 600H350V842H595Z" class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                     </div>
+                                     <button onclick="applyCustomBackground()" data-testid="btn-apply-custom-bg" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-xs transition" data-i18n="btn-apply-custom-bg">
+                                         החל רקע מותאם אישית
+                                     </button>
+                                 </div>
+                             </div>
+
                             <button onclick="applyBackgroundStyle('cyber')" id="btn-bg-style-cyber" class="bg-style-btn w-full py-2.5 px-4 bg-emerald-950/40 hover:bg-emerald-900/40 rounded-lg text-xs font-bold border border-slate-700 text-emerald-400 transition flex items-center justify-center gap-1.5 shadow-sm shadow-black/20" style="margin-top: 8px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
@@ -352,11 +379,24 @@
                                 </label>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-xs text-slate-300" data-i18n="lbl-logo-bg">רקע לבן ללוגו:</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="toggle-logo-bg" onchange="updateLogoBackground()" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                                </label>
+                                <span class="text-xs text-slate-300" data-i18n="lbl-logo-bg">רקע ללוגו:</span>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="color-logo-bg" data-testid="color-logo-bg" value="#ffffff" oninput="updateLogoBackground()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-logo-bg" data-testid="toggle-logo-bg" onchange="updateLogoBackground()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-300" data-i18n="lbl-logo-shadow">צל/הילה ללוגו:</span>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="color-logo-shadow" data-testid="color-logo-shadow" value="#000000" oninput="updateLogoBackground()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-logo-shadow" data-testid="toggle-logo-shadow" onchange="updateLogoBackground()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-logo-position">מיקום לוגו:</label>
@@ -426,13 +466,13 @@
                 </div>
 
                 <!-- Tab Content: PRESETS -->
-                <div id="panel-presets" class="p-6 space-y-6 hidden">
+                <div id="panel-presets" class="p-6 space-y-6 hidden" data-testid="panel-presets">
                     <!-- Language Toggle -->
                     <div>
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3" data-i18n="sec-ui-language">שפת ממשק העורך (UI Language)</h3>
                         <div class="flex gap-2">
-                            <button onclick="setUILanguage('he')" id="btn-lang-he" class="flex-1 py-2 text-xs font-bold rounded-lg transition border border-emerald-500 bg-emerald-950/20 text-emerald-400">עברית</button>
-                            <button onclick="setUILanguage('en')" id="btn-lang-en" class="flex-1 py-2 text-xs font-bold rounded-lg transition border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300">English</button>
+                            <button onclick="setUILanguage('he')" id="btn-lang-he" data-testid="btn-lang-he" class="flex-1 py-2 text-xs font-bold rounded-lg transition border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300">עברית</button>
+                            <button onclick="setUILanguage('en')" id="btn-lang-en" data-testid="btn-lang-en" class="flex-1 py-2 text-xs font-bold rounded-lg transition border border-emerald-500 bg-emerald-950/20 text-emerald-400">English</button>
                         </div>
                     </div>
 
@@ -444,7 +484,7 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-active-preset">בחירת ערכה פעילה:</label>
-                                <select id="select-preset" onchange="handlePresetSelect(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                                <select id="select-preset" data-testid="select-preset" onchange="handlePresetSelect(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
                                     <!-- Options populated dynamically in app.js -->
                                 </select>
                             </div>
@@ -452,12 +492,57 @@
                             <!-- Import/Export JSON file -->
                             <div class="space-y-2">
                                 <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-load-json">טעינה מקובץ JSON:</label>
-                                <input type="file" id="input-preset-file" accept=".json" onchange="handlePresetFileUpload(event)" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
-                                <button onclick="exportCurrentPreset()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg border border-indigo-750 transition flex items-center justify-center gap-2 text-sm shadow-sm" data-i18n="btn-export-json">
+                                <input type="file" id="input-preset-file" data-testid="input-preset-file" accept=".json" onchange="handlePresetFileUpload(event)" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
+                                <button onclick="exportCurrentPreset()" data-testid="btn-export-json" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg border border-indigo-750 transition flex items-center justify-center gap-2 text-sm shadow-sm" data-i18n="btn-export-json">
                                     ייצוא כקובץ JSON
                                 </button>
                             </div>
                         </div>
+                    </div>
+
+                    <hr class="border-slate-800">
+
+                    <!-- Folder Sync Section -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3" data-i18n="sec-folder-sync">סנכרון תיקיית ערכות עיצוב (Local Sync)</h3>
+                        <p class="text-[11px] text-slate-400 mb-3" data-i18n="desc-folder-sync">בחר תיקייה מקומית המכילה קבצי JSON של ערכות עיצוב. הדפדפן ישמור את הגישה לתיקייה לטעינה מהירה מחדש.</p>
+                        <div class="space-y-2">
+                            <button onclick="selectPresetsDirectory()" data-testid="btn-select-folder" class="w-full py-2 bg-slate-900 border border-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition" data-i18n="btn-select-folder">
+                                בחר תיקיית ערכות
+                            </button>
+                            <button onclick="syncPresetsDirectory()" id="btn-sync-folder-action" data-testid="btn-sync-folder" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition hidden" data-i18n="btn-sync-folder">
+                                סנכרן תיקייה מחדש
+                            </button>
+                            <!-- Hidden input fallback for webkitdirectory folder upload -->
+                            <input type="file" id="input-preset-folder" webkitdirectory directory multiple class="hidden" onchange="handlePresetFolderUpload(event)">
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800">
+
+                    <!-- AI Poster Assistant Card -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3" data-i18n="sec-ai-assistant">עוזר עיצוב בינה מלאכותית (AI Assistant)</h3>
+                        <p class="text-[11px] text-slate-400 mb-3" data-i18n="desc-ai-assistant">העתק את ההנחיות לבינה המלאכותית (כגון Gemini/ChatGPT), ואז הדבק את קוד ה-JSON שהתקבל למטה.</p>
+                        <div class="space-y-3">
+                            <button onclick="copyAIPrompt()" class="w-full py-2.5 bg-slate-900 border border-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition" data-testid="btn-copy-prompt" data-i18n="btn-copy-prompt">
+                                העתק הנחיית בינה מלאכותית
+                            </button>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-paste-json">הדבק קוד JSON של הערכה:</label>
+                                <textarea id="input-ai-json" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:ring-1 focus:ring-emerald-500 focus:outline-none" placeholder='{ "name": "My AI Preset", ... }' data-testid="input-ai-json"></textarea>
+                            </div>
+                            <button onclick="loadPastedPreset()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition" data-testid="btn-load-paste" data-i18n="btn-load-paste">
+                                טען ערכה מודבקת
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800">
+
+                    <!-- Drag and Drop Box -->
+                    <div id="preset-drag-drop-zone" data-testid="preset-drag-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-xl p-4 text-center cursor-pointer transition duration-200" ondragover="onPresetDragOver(event)" ondragleave="onPresetDragLeave(event)" ondrop="onPresetDrop(event)" onclick="document.getElementById('input-preset-file').click()">
+                        <span id="lbl-drag-drop-zone-text" class="text-xs text-slate-400" data-i18n="lbl-drag-drop-zone">גרור ושחרר קבצי JSON לכאן לטעינה מהירה</span>
                     </div>
 
                     <hr class="border-slate-800">
@@ -468,9 +553,9 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-preset-name">שם הערכה החדשה:</label>
-                                <input type="text" id="input-memory-preset-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" data-i18n-placeholder="lbl-preset-name">
+                                <input type="text" id="input-memory-preset-name" data-testid="input-memory-preset-name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" data-i18n-placeholder="lbl-preset-name">
                             </div>
-                            <button onclick="saveCurrentToMemory()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition" data-i18n="btn-save-memory">
+                            <button onclick="saveCurrentToMemory()" data-testid="btn-save-memory" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition" data-i18n="btn-save-memory">
                                 שמור לזיכרון
                             </button>
                         </div>

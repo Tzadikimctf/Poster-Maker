@@ -1,46 +1,57 @@
-// Dynamic Background squigglies styles
-const BACKGROUND_STYLES = {
-    curves: {
-        topLeftD: "M0 0H290C290 0 310 90 275 160C240 220 145 200 0 200V0Z",
-        midRightD: "M595 180C510 180 440 250 440 360C440 470 520 500 595 520V180Z",
-        bottomRightD: "M595 520C470 520 370 620 370 730C370 780 395 815 425 842H595V520Z"
-    },
-    geometric: {
-        topLeftD: "M0 0H310L230 180H0V0Z",
-        midRightD: "M595 160L460 260L595 530V160Z",
-        bottomRightD: "M595 480L380 720L500 842H595V480Z"
-    },
-    waves: {
-        topLeftD: "M0 0H260C260 0 340 50 250 120C160 190 220 220 0 220V0Z",
-        midRightD: "M595 150C530 150 420 200 460 320C500 440 510 450 595 490V150Z",
-        bottomRightD: "M595 470C430 470 390 550 400 680C410 810 510 820 595 842V470Z"
-    },
-    cyber: {
-        topLeftD: "M0 0H280L210 70H140L70 140H0V0Z",
-        midRightD: "M595 180H520L460 240V340L500 380H595V180Z",
-        bottomRightD: "M595 520H480L380 620V730L490 842H595V520Z"
-    },
-    minimalist: {
-        topLeftD: "M0 0H120L0 120V0Z",
-        midRightD: "M595 320L540 360L595 400V320Z",
-        bottomRightD: "M595 720L490 842H595V720Z"
-    },
-    diagonal: {
-        topLeftD: "M0 0H350L0 350V0Z",
-        midRightD: "M595 240L420 415L595 590V240Z",
-        bottomRightD: "M595 590L342 842H595V590Z"
-    },
-    techno: {
-        topLeftD: "M0 0H260L310 50L260 100H100L0 200V0Z",
-        midRightD: "M595 180H500L450 230V330L500 380H595V180Z",
-        bottomRightD: "M595 520H480L380 620V730L492 842H595V520Z"
-    },
-    stripes: {
-        topLeftD: "M0 0H240L160 80H80L0 160V0Z",
-        midRightD: "M595 140L500 235L595 330V140ZM595 380L500 475L595 570V380Z",
-        bottomRightD: "M595 620L373 842H485L595 732V620Z"
-    }
-};
+/**
+ * @typedef {Object} BackgroundStyle
+ * @property {string} topLeftD - SVG path data for the top-left shape.
+ * @property {string} midRightD - SVG path data for the mid-right shape.
+ * @property {string} bottomRightD - SVG path data for the bottom-right shape.
+ */
+
+/**
+ * @typedef {Object} Theme
+ * @property {string} primary - Main primary color (dark hex code).
+ * @property {string} secondary - Secondary accent color (light hex code).
+ * @property {string} textDark - Dark color for text printed on light backgrounds.
+ * @property {string} textLight - Light color for text printed on dark backgrounds.
+ */
+
+/**
+ * @typedef {Object} Preset
+ * @property {string} name - Unique descriptive preset name.
+ * @property {string} calloutLeft - Catchy left bubble text callout.
+ * @property {string} calloutRight - Catchy right bubble text callout.
+ * @property {string} title1 - Topic title line 1.
+ * @property {string} title2 - Topic title line 2.
+ * @property {string} date - Event date text.
+ * @property {string} time - Event time text.
+ * @property {string} location - Event location room/building.
+ * @property {string} speakerName - Speaker first/last name.
+ * @property {string} speakerRole - Speaker role or company alignment.
+ * @property {string} theme - Style theme key ('tzadik' | 'original' | 'custom').
+ * @property {string} bgStyle - Background geometry curves key ('curves' | 'geometric' | 'waves' | 'cyber' | 'minimalist' | 'diagonal' | 'techno' | 'stripes').
+ * @property {string} cyberOverlay - Active cyber decoration key ('none' | 'networks' | 'electronics' | 'reversing' | 'exploit').
+ * @property {boolean} logoVisible - Whether the branding logo is rendered.
+ * @property {boolean} logoBg - Whether the white backdrop padding is enabled for logo.
+ * @property {string} logoPosition - Alignment quadrant ('top-left' | 'top-right' | 'bottom-left').
+ * @property {number} logoSize - Logo width in pixels.
+ * @property {number} avatarZoom - Speaker avatar scale percentage.
+ * @property {number} avatarX - Horizontal offset in pixels for crop positioning.
+ * @property {number} avatarY - Vertical offset in pixels for crop positioning.
+ * @property {number} fzTitle - Title font size in pixels.
+ * @property {number} fzCallouts - Callout balloons font size in pixels.
+ * @property {number} fzDetails - Location details font size in pixels.
+ * @property {number} fzSpeaker - Speaker info font size in pixels.
+ * @property {number} verticalShift - Top margin spacing vertical offset.
+ * @property {string} primaryColor - Brand primary color hex value.
+ * @property {string} secondaryColor - Brand secondary accent color hex value.
+ * @property {string} textDarkColor - Dark typography color hex value.
+ * @property {string} textLightColor - Light typography color hex value.
+ * @property {string} [layoutDirection] - Layout orientation ('ltr' | 'rtl').
+ * @property {string} [uiLanguage] - Editor language ('he' | 'en').
+ * @property {string} [speakerImgSrc] - Custom avatar source (Base64 data or URL).
+ * @property {string} [logoImgSrc] - Custom logo source (Base64 data or URL).
+ */
+
+// Dynamic Background squigglies styles - populated dynamically via scripts in backgrounds/ folder
+const BACKGROUND_STYLES = {};
 
 // Preset Colors & Theme Data
 const THEMES = {
@@ -74,6 +85,9 @@ const DEFAULTS = {
     cyberOverlay: 'none',
     logoVisible: true,
     logoBg: false,
+    logoBgColor: '#ffffff',
+    logoShadow: false,
+    logoShadowColor: '#000000',
     logoPosition: 'top-left',
     logoSize: 95,
     avatarZoom: 440,
@@ -138,6 +152,13 @@ const UI_TRANSLATIONS = {
         "btn-style-diagonal": "סגנון אלכסוני",
         "btn-style-techno": "סגנון טכנולוגי",
         "btn-style-stripes": "סגנון פסים",
+        "btn-style-custom": "רקע מותאם אישית",
+        "sec-custom-bg-paths": "סגנון רקע מותאם אישית (SVG Paths)",
+        "lbl-custom-bg-desc": "הזן קואורדינטות SVG (d attribute) עבור צורות הרקע של הכרזה:",
+        "lbl-custom-bg-tl": "צורת שמאל למעלה (Top-Left Shape):",
+        "lbl-custom-bg-mr": "צורת ימין אמצע (Mid-Right Shape):",
+        "lbl-custom-bg-br": "צורת ימין למטה (Bottom-Right Shape):",
+        "btn-apply-custom-bg": "החל רקע מותאם אישית",
         "btn-style-cyber": "סגנון מעגלי סייבר ורשת (Cyber Tech)",
         "sec-cyber-overlay": "גרפיקה נושאית של סייבר (Overlays)",
         "desc-cyber-overlay": "בחר שכבת ציורים או נתוני סייבר שיצטרפו לרקע הכרזה.",
@@ -162,7 +183,10 @@ const UI_TRANSLATIONS = {
         // Tab Images
         "sec-logo-pos": "מיקום לוגו המותג",
         "lbl-show-logo": "הצגת לוגו:",
-        "lbl-logo-bg": "רקע לבן ללוגו:",
+        "lbl-logo-bg": "רקע ללוגו:",
+        "lbl-logo-bg-color": "צבע רקע ללוגו:",
+        "lbl-logo-shadow": "צל/הילה ללוגו:",
+        "lbl-logo-shadow-color": "צבע צל/הילה:",
         "lbl-logo-position": "מיקום לוגו:",
         "btn-logo-tl": "שמאל למעלה",
         "btn-logo-tr": "ימין למעלה",
@@ -186,6 +210,16 @@ const UI_TRANSLATIONS = {
         "sec-save-memory": "שמירת ערכה מהירה לזיכרון (In-Memory)",
         "lbl-preset-name": "שם הערכה החדשה:",
         "btn-save-memory": "שמור לזיכרון",
+        "sec-folder-sync": "סנכרון תיקיית ערכות עיצוב (Local Sync)",
+        "desc-folder-sync": "בחר תיקייה מקומית המכילה קבצי JSON של ערכות עיצוב. הדפדפן ישמור את הגישה לתיקייה לטעינה מהירה מחדש.",
+        "btn-select-folder": "בחר תיקיית ערכות",
+        "btn-sync-folder": "סנכרן תיקייה מחדש",
+        "lbl-drag-drop-zone": "גרור ושחרר קבצי JSON לכאן לטעינה מהירה",
+        "sec-ai-assistant": "עוזר עיצוב בינה מלאכותית (AI Assistant)",
+        "desc-ai-assistant": "העתק את ההנחיות לבינה המלאכותית (כגון Gemini/ChatGPT), ואז הדבק את קוד ה-JSON שהתקבל למטה.",
+        "btn-copy-prompt": "העתק הנחיית בינה מלאכותית",
+        "lbl-paste-json": "הדבק קוד JSON של הערכה:",
+        "btn-load-paste": "טען ערכה מודבקת",
         "sec-ui-language": "שפת ממשק העורך (UI Language)",
         "lbl-ui-lang": "בחר שפת ממשק:"
     },
@@ -231,6 +265,13 @@ const UI_TRANSLATIONS = {
         "btn-style-diagonal": "Diagonal Style",
         "btn-style-techno": "Techno Style",
         "btn-style-stripes": "Stripes Style",
+        "btn-style-custom": "Custom Background",
+        "sec-custom-bg-paths": "Custom Background (SVG Paths)",
+        "lbl-custom-bg-desc": "Enter SVG path coordinates (d attribute) for the poster shapes:",
+        "lbl-custom-bg-tl": "Top-Left Shape Path:",
+        "lbl-custom-bg-mr": "Mid-Right Shape Path:",
+        "lbl-custom-bg-br": "Bottom-Right Shape Path:",
+        "btn-apply-custom-bg": "Apply Custom Background",
         "btn-style-cyber": "Cyber Circuit & Networks Style",
         "sec-cyber-overlay": "Thematic Cyber Graphics (Overlays)",
         "desc-cyber-overlay": "Select a layer of cyber illustrations to add to the poster background.",
@@ -255,7 +296,10 @@ const UI_TRANSLATIONS = {
         // Tab Images
         "sec-logo-pos": "Brand Logo Placement",
         "lbl-show-logo": "Show Logo:",
-        "lbl-logo-bg": "White Background for Logo:",
+        "lbl-logo-bg": "Logo Background Panel:",
+        "lbl-logo-bg-color": "Background Color:",
+        "lbl-logo-shadow": "Logo Glow/Shadow:",
+        "lbl-logo-shadow-color": "Glow/Shadow Color:",
         "lbl-logo-position": "Logo Position:",
         "btn-logo-tl": "Top Left",
         "btn-logo-tr": "Top Right",
@@ -279,6 +323,16 @@ const UI_TRANSLATIONS = {
         "sec-save-memory": "Quick Save to Browser Memory",
         "lbl-preset-name": "New Preset Name:",
         "btn-save-memory": "Save to Memory",
+        "sec-folder-sync": "Presets Folder Sync (Local Sync)",
+        "desc-folder-sync": "Choose a local folder containing your preset JSON files. The browser will persist access for quick syncing.",
+        "btn-select-folder": "Select Presets Folder",
+        "btn-sync-folder": "Sync Folder Now",
+        "lbl-drag-drop-zone": "Drag & Drop preset JSON files here to load",
+        "sec-ai-assistant": "AI Poster Assistant",
+        "desc-ai-assistant": "Copy instructions for an AI (like Gemini or ChatGPT), then paste the generated JSON code block below.",
+        "btn-copy-prompt": "Copy AI System Prompt",
+        "lbl-paste-json": "Paste Preset JSON Code:",
+        "btn-load-paste": "Load Pasted Preset",
         "sec-ui-language": "Interface Language (UI Language)",
         "lbl-ui-lang": "Select UI Language:"
     }

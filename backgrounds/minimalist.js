@@ -1,0 +1,5 @@
+BACKGROUND_STYLES.minimalist = {
+    topLeftD: "M0 0H120L0 120V0Z",
+    midRightD: "M595 320L540 360L595 400V320Z",
+    bottomRightD: "M595 720L490 842H595V720Z"
+};

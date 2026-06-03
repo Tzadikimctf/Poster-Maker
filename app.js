@@ -381,10 +381,13 @@ function updateLogoVisibility() {
 }
 
 // Apply Background squigglies dynamic paths
+/**
+ * Applies a background graphic style to the canvas.
+ * Loads the layout dynamic coordinates from the backgrounds/ folder if not cached.
+ * @param {string} styleName - The style key to apply.
+ */
 function applyBackgroundStyle(styleName) {
     currentBackgroundStyle = styleName;
-    const style = BACKGROUND_STYLES[styleName];
-    if (!style) return;
 
     // Update UI active button styles
     document.querySelectorAll('.bg-style-btn').forEach(btn => {
@@ -397,10 +400,65 @@ function applyBackgroundStyle(styleName) {
         activeBtn.classList.add('border-emerald-500');
     }
 
-    // Apply SVG paths
-    document.getElementById('svg-bg-top-left').setAttribute('d', style.topLeftD);
-    document.getElementById('svg-bg-mid-right').setAttribute('d', style.midRightD);
-    document.getElementById('svg-bg-bottom-right').setAttribute('d', style.bottomRightD);
+    // Toggle Custom Background Paths editor visibility
+    const customSection = document.getElementById('section-custom-bg');
+    if (customSection) {
+        if (styleName === 'custom') {
+            customSection.classList.remove('hidden');
+        } else {
+            customSection.classList.add('hidden');
+        }
+    }
+
+    if (styleName === 'custom') {
+        applyBackgroundStylePaths('custom');
+        return;
+    }
+
+    // Load dynamic style using script injection if not cached (for 100% offline file:// support)
+    if (!BACKGROUND_STYLES[styleName]) {
+        const script = document.createElement('script');
+        script.src = `backgrounds/${styleName}.js`;
+        script.onload = () => {
+            applyBackgroundStylePaths(styleName);
+        };
+        script.onerror = () => {
+            console.error(`Failed to load background style script: backgrounds/${styleName}.js`);
+        };
+        document.body.appendChild(script);
+    } else {
+        applyBackgroundStylePaths(styleName);
+    }
+}
+
+/**
+ * Applies the SVG path data from the loaded background style to the canvas.
+ * @param {string} styleName - The loaded style key.
+ */
+function applyBackgroundStylePaths(styleName) {
+    const style = BACKGROUND_STYLES[styleName];
+    if (!style) return;
+
+    document.getElementById('svg-bg-top-left').setAttribute('d', style.topLeftD || '');
+    document.getElementById('svg-bg-mid-right').setAttribute('d', style.midRightD || '');
+    document.getElementById('svg-bg-bottom-right').setAttribute('d', style.bottomRightD || '');
+}
+
+/**
+ * Reads user input SVG paths from UI, registers them as the 'custom' style, and applies it.
+ */
+function applyCustomBackground() {
+    const topLeftD = document.getElementById('input-custom-bg-tl').value.trim();
+    const midRightD = document.getElementById('input-custom-bg-mr').value.trim();
+    const bottomRightD = document.getElementById('input-custom-bg-br').value.trim();
+
+    BACKGROUND_STYLES.custom = {
+        topLeftD: topLeftD,
+        midRightD: midRightD,
+        bottomRightD: bottomRightD
+    };
+
+    applyBackgroundStyle('custom');
 }
 
 // Apply dynamic cybersecurity thematic background overlays
@@ -427,17 +485,46 @@ function applyCyberOverlay(overlayName) {
 // Logo Background Toggle
 function updateLogoBackground() {
     const hasBg = document.getElementById('toggle-logo-bg').checked;
+    const bgColor = document.getElementById('color-logo-bg').value;
+    const hasShadow = document.getElementById('toggle-logo-shadow').checked;
+    const shadowColor = document.getElementById('color-logo-shadow').value;
+    
     const logoCont = document.getElementById('poster-logo-container');
+    const logoImg = document.getElementById('poster-logo');
+    const logoFallback = document.getElementById('poster-logo-svg-fallback');
+
+    // 1. Handle Background Panel
     if (hasBg) {
-        logoCont.style.backgroundColor = '#ffffff';
+        logoCont.style.backgroundColor = bgColor;
         logoCont.style.padding = '8px';
         logoCont.style.borderRadius = '12px';
-        logoCont.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+        
+        if (hasShadow) {
+            // Apply box-shadow to the container card
+            logoCont.style.boxShadow = `0 8px 24px ${shadowColor}50, 0 2px 8px ${shadowColor}30`;
+        } else {
+            // Subtle gray shadow if no shadow color selected
+            logoCont.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+        }
+        
+        // Remove image filters since shadow is on the card container
+        if (logoImg) logoImg.style.filter = 'none';
+        if (logoFallback) logoFallback.style.filter = 'none';
     } else {
         logoCont.style.backgroundColor = 'transparent';
         logoCont.style.padding = '0px';
         logoCont.style.borderRadius = '0px';
         logoCont.style.boxShadow = 'none';
+        
+        // 2. Handle drop-shadow directly on transparent logo shape
+        if (hasShadow) {
+            const filterVal = `drop-shadow(0 0 8px ${shadowColor})`;
+            if (logoImg) logoImg.style.filter = filterVal;
+            if (logoFallback) logoFallback.style.filter = filterVal;
+        } else {
+            if (logoImg) logoImg.style.filter = 'none';
+            if (logoFallback) logoFallback.style.filter = 'none';
+        }
     }
     
     // Re-apply positioning to dynamically adjust margin padding for dynamicOffset!
@@ -724,6 +811,9 @@ function getCurrentStateAsPreset(name = "") {
 
         logoVisible: document.getElementById('toggle-logo').checked,
         logoBg: document.getElementById('toggle-logo-bg').checked,
+        logoBgColor: document.getElementById('color-logo-bg').value,
+        logoShadow: document.getElementById('toggle-logo-shadow').checked,
+        logoShadowColor: document.getElementById('color-logo-shadow').value,
         logoPosition: currentLogoPosition,
         logoSize: parseInt(document.getElementById('logo-size').value),
 
@@ -745,12 +835,30 @@ function getCurrentStateAsPreset(name = "") {
         layoutDirection: document.getElementById('cyber-poster').getAttribute('dir') || 'rtl',
         uiLanguage: currentLanguage,
         speakerImgSrc: document.getElementById('poster-speaker-img').getAttribute('src') || document.getElementById('poster-speaker-img').src,
-        logoImgSrc: document.getElementById('poster-logo').getAttribute('src') || document.getElementById('poster-logo').src
+        logoImgSrc: document.getElementById('poster-logo').getAttribute('src') || document.getElementById('poster-logo').src,
+        customBgStyle: currentBackgroundStyle === 'custom' ? BACKGROUND_STYLES.custom : undefined
     };
 }
 
 function loadPresetState(preset) {
     if (!preset) return;
+
+    // Restore custom background paths if present in the preset
+    if (preset.customBgStyle) {
+        BACKGROUND_STYLES.custom = preset.customBgStyle;
+        if (document.getElementById('input-custom-bg-tl')) {
+            document.getElementById('input-custom-bg-tl').value = preset.customBgStyle.topLeftD || '';
+            document.getElementById('input-custom-bg-mr').value = preset.customBgStyle.midRightD || '';
+            document.getElementById('input-custom-bg-br').value = preset.customBgStyle.bottomRightD || '';
+        }
+    } else {
+        // Clear custom inputs if loading a built-in style
+        if (document.getElementById('input-custom-bg-tl')) {
+            document.getElementById('input-custom-bg-tl').value = '';
+            document.getElementById('input-custom-bg-mr').value = '';
+            document.getElementById('input-custom-bg-br').value = '';
+        }
+    }
 
     // Apply values
     document.getElementById('input-callout-left').value = preset.calloutLeft;
@@ -773,6 +881,9 @@ function loadPresetState(preset) {
     // Apply logos
     document.getElementById('toggle-logo').checked = preset.logoVisible;
     document.getElementById('toggle-logo-bg').checked = preset.logoBg;
+    document.getElementById('color-logo-bg').value = preset.logoBgColor || '#ffffff';
+    document.getElementById('toggle-logo-shadow').checked = !!preset.logoShadow;
+    document.getElementById('color-logo-shadow').value = preset.logoShadowColor || '#000000';
     document.getElementById('logo-size').value = preset.logoSize;
 
     // Apply colors
@@ -1010,6 +1121,361 @@ function printPoster() {
     window.print();
 }
 
+// IndexedDB helper functions to persist directory handles
+const DB_NAME = 'PresetsDirectoryDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'handles';
+const KEY_NAME = 'directoryHandle';
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            db.createObjectStore(STORE_NAME);
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+async function saveDirectoryHandle(handle) {
+    try {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put(handle, KEY_NAME);
+        await new Promise((resolve) => tx.oncomplete = resolve);
+    } catch (err) {
+        console.error('IndexedDB write error:', err);
+    }
+}
+
+async function getDirectoryHandle() {
+    try {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.get(KEY_NAME);
+        return new Promise((resolve) => {
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+        });
+    } catch (err) {
+        console.error('IndexedDB read error:', err);
+        return null;
+    }
+}
+
+async function selectPresetsDirectory() {
+    if ('showDirectoryPicker' in window) {
+        try {
+            const handle = await window.showDirectoryPicker({
+                mode: 'read'
+            });
+            await saveDirectoryHandle(handle);
+            await loadPresetsFromHandle(handle);
+            const syncBtn = document.getElementById('btn-sync-folder-action');
+            if (syncBtn) syncBtn.classList.remove('hidden');
+        } catch (err) {
+            console.warn('Directory picking cancelled or failed:', err);
+        }
+    } else {
+        const folderInput = document.getElementById('input-preset-folder');
+        if (folderInput) folderInput.click();
+    }
+}
+
+async function loadPresetsFromHandle(handle) {
+    try {
+        const opts = { mode: 'read' };
+        if (await handle.queryPermission(opts) !== 'granted') {
+            if (await handle.requestPermission(opts) !== 'granted') {
+                throw new Error('Permission denied to read folder.');
+            }
+        }
+
+        let loadedCount = 0;
+        for await (const entry of handle.values()) {
+            if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.json')) {
+                const file = await entry.getFile();
+                const text = await file.text();
+                try {
+                    const preset = JSON.parse(text);
+                    if (preset.name && preset.primaryColor) {
+                        customPresets[preset.name] = preset;
+                        loadedCount++;
+                    }
+                } catch (e) {
+                    console.warn(`Failed to parse preset file ${entry.name}:`, e);
+                }
+            }
+        }
+
+        if (loadedCount > 0) {
+            populatePresetDropdown();
+            const successMsg = currentLanguage === 'he' 
+                ? `נטענו בהצלחה ${loadedCount} ערכות עיצוב מהתיקייה!` 
+                : `Successfully loaded ${loadedCount} presets from folder!`;
+            alert(successMsg);
+        }
+    } catch (err) {
+        console.error('Error reading presets from handle:', err);
+        const errorMsg = currentLanguage === 'he'
+            ? 'שגיאה בקריאת תיקיית הערכות.'
+            : 'Error reading presets from the selected folder.';
+        alert(errorMsg);
+    }
+}
+
+async function syncPresetsDirectory() {
+    const handle = await getDirectoryHandle();
+    if (handle) {
+        await loadPresetsFromHandle(handle);
+    } else {
+        selectPresetsDirectory();
+    }
+}
+
+async function handlePresetFolderUpload(event) {
+    const files = event.target.files;
+    let loadedCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.name.toLowerCase().endsWith('.json')) {
+            const text = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsText(file);
+            });
+            try {
+                const preset = JSON.parse(text);
+                if (preset.name && preset.primaryColor) {
+                    customPresets[preset.name] = preset;
+                    loadedCount++;
+                }
+            } catch (e) {
+                console.warn(`Failed to parse preset file ${file.name}:`, e);
+            }
+        }
+    }
+
+    if (loadedCount > 0) {
+        populatePresetDropdown();
+        const successMsg = currentLanguage === 'he' 
+            ? `נטענו בהצלחה ${loadedCount} ערכות עיצוב מהתיקייה!` 
+            : `Successfully loaded ${loadedCount} presets from folder!`;
+        alert(successMsg);
+    }
+}
+
+function onPresetDragOver(event) {
+    event.preventDefault();
+    const zone = document.getElementById('preset-drag-drop-zone');
+    if (zone) {
+        zone.classList.remove('border-slate-700');
+        zone.classList.add('border-emerald-500', 'bg-emerald-950/10');
+    }
+}
+
+function onPresetDragLeave(event) {
+    event.preventDefault();
+    const zone = document.getElementById('preset-drag-drop-zone');
+    if (zone) {
+        zone.classList.remove('border-emerald-500', 'bg-emerald-950/10');
+        zone.classList.add('border-slate-700');
+    }
+}
+
+async function onPresetDrop(event) {
+    event.preventDefault();
+    const zone = document.getElementById('preset-drag-drop-zone');
+    if (zone) {
+        zone.classList.remove('border-emerald-500', 'bg-emerald-950/10');
+        zone.classList.add('border-slate-700');
+    }
+
+    const files = event.dataTransfer.files;
+    let loadedCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.name.toLowerCase().endsWith('.json')) {
+            const text = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsText(file);
+            });
+            try {
+                const preset = JSON.parse(text);
+                if (preset.name && preset.primaryColor) {
+                    customPresets[preset.name] = preset;
+                    loadedCount++;
+                }
+            } catch (e) {
+                console.warn(`Failed to parse preset file ${file.name}:`, e);
+            }
+        }
+    }
+
+    if (loadedCount > 0) {
+        populatePresetDropdown();
+        const successMsg = currentLanguage === 'he' 
+            ? `נטענו בהצלחה ${loadedCount} ערכות עיצוב מהגררה!` 
+            : `Successfully loaded ${loadedCount} dropped presets!`;
+        alert(successMsg);
+    }
+}
+
+async function checkPersistedDirectory() {
+    try {
+        const handle = await getDirectoryHandle();
+        if (handle) {
+            const syncBtn = document.getElementById('btn-sync-folder-action');
+            if (syncBtn) syncBtn.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.warn('Persisted directory check failed:', e);
+    }
+
+    try {
+        const response = await fetch('presets/');
+        if (response.ok) {
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a'));
+            
+            const jsonFiles = links
+                .map(link => link.getAttribute('href'))
+                .filter(href => href && href.toLowerCase().endsWith('.json'));
+
+            let count = 0;
+            for (const fileUrl of jsonFiles) {
+                try {
+                    const res = await fetch(fileUrl);
+                    if (res.ok) {
+                        const preset = await res.json();
+                        if (preset.name && preset.primaryColor) {
+                            customPresets[preset.name] = preset;
+                            count++;
+                        }
+                    }
+                } catch (e) {
+                }
+            }
+            if (count > 0) {
+                populatePresetDropdown();
+                console.log(`Auto-loaded ${count} presets from web server presets/ folder.`);
+            }
+        }
+    } catch (err) {
+    }
+}
+
+/**
+ * Copies the pre-formatted system prompt instructions for generative AI to the clipboard.
+ */
+function copyAIPrompt() {
+    const promptText = `You are a Cyber Poster Designer assistant. Your task is to output a single, raw JSON preset configuration block matching the user's event request. Do NOT write conversational explanations; output ONLY the JSON structure.
+
+Conform strictly to the following schema definition:
+- name: Unique descriptive name.
+- calloutLeft: Catchy call-to-action (approx 5-8 words).
+- calloutRight: Supplementary call-to-action (approx 5-8 words).
+- title1: Main title line 1 (short).
+- title2: Main title line 2 (short).
+- date: formatted string.
+- time: formatted time range.
+- location: location description.
+- speakerName: name of the speaker.
+- speakerRole: role/company of the speaker.
+- theme: "tzadik" (for deep green) or "original" (for dark navy).
+- bgStyle: Choose one: "curves", "geometric", "waves", "cyber", "minimalist", "diagonal", "techno", "stripes".
+- cyberOverlay: Choose one: "none", "networks", "electronics", "reversing", "exploit".
+- logoVisible: boolean.
+- logoBg: boolean.
+- logoPosition: "top-left", "top-right", "bottom-left".
+- logoSize: integer between 40 and 150 (defaults to 95).
+- avatarZoom: integer between 100 and 800 (defaults to 100).
+- avatarX: integer between -400 and 100 (defaults to 0).
+- avatarY: integer between -600 and 100 (defaults to 0).
+- fzTitle: Main title font size (defaults to 36).
+- fzCallouts: Callouts font size (defaults to 15).
+- fzDetails: Date/time details font size (defaults to 19).
+- fzSpeaker: Speaker info font size (defaults to 22).
+- verticalShift: Vertical alignment shift (defaults to 0).
+- primaryColor: Hex color (matches theme e.g., "#004124" or "#091e36" or custom).
+- secondaryColor: Accent hex color (e.g., "#71CCE7" or "#00b0ff" or custom).
+- textDarkColor: Text color for dark fonts on light blocks.
+- textLightColor: Text color for light fonts on dark blocks.
+- layoutDirection: "ltr" (English) or "rtl" (Hebrew).
+- uiLanguage: "en" or "he".
+- speakerImgSrc: "https://placehold.co/300x300/004124/71CCE7?text=Speaker" (adjust colors to match secondary/primary).
+- logoImgSrc: "Biu_tzadik_nobackground.png".`;
+
+    navigator.clipboard.writeText(promptText).then(() => {
+        const msg = currentLanguage === 'he' 
+            ? 'הנחיית הבינה המלאכותית הועתקה ללוח!' 
+            : 'AI prompt copied to clipboard!';
+        alert(msg);
+    }).catch(err => {
+        console.error('Failed to copy prompt:', err);
+    });
+}
+
+/**
+ * Parses and loads a JSON preset pasted directly from the textarea, stripping any markdown wrappers if present.
+ */
+function loadPastedPreset() {
+    const textarea = document.getElementById('input-ai-json');
+    if (!textarea) return;
+
+    let rawText = textarea.value.trim();
+    if (!rawText) {
+        const errorMsg = currentLanguage === 'he' 
+            ? 'נא להזין קוד JSON.' 
+            : 'Please enter JSON code.';
+        alert(errorMsg);
+        return;
+    }
+
+    // Strip markdown code block wraps if present (e.g. ```json ... ``` or ``` ... ```)
+    rawText = rawText.replace(/^```[a-zA-Z]*\s*/, '').replace(/\s*```$/, '');
+
+    try {
+        const preset = JSON.parse(rawText);
+
+        // Basic validation
+        if (!preset.calloutLeft || !preset.title1 || !preset.primaryColor) {
+            throw new Error("Missing critical preset keys.");
+        }
+
+        const presetName = preset.name || (currentLanguage === 'he' ? 'ערכת בינה מלאכותית' : 'AI Preset');
+        preset.name = presetName;
+
+        // Save in memory
+        customPresets[presetName] = preset;
+
+        // Populate and select
+        populatePresetDropdown("custom:" + presetName);
+        loadPresetState(preset);
+
+        textarea.value = '';
+        const successMsg = currentLanguage === 'he' 
+            ? 'ערכת ה-AI נטענה בהצלחה!' 
+            : 'AI preset loaded successfully!';
+        alert(successMsg);
+    } catch (err) {
+        console.error('Error parsing pasted preset JSON:', err);
+        const errorMsg = currentLanguage === 'he'
+            ? 'שגיאה בפענוח ה-JSON: נא לוודא שהמבנה תקין.'
+            : 'Error parsing JSON: Please ensure the format is valid.';
+        alert(errorMsg);
+    }
+}
+
 // Listeners and kick off triggers
 window.addEventListener('resize', adjustPosterScale);
 
@@ -1017,4 +1483,5 @@ window.onload = function () {
     resetToDefaults();
     populatePresetDropdown();
     adjustPosterScale();
+    checkPersistedDirectory();
 }
