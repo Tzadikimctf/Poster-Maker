@@ -1,6 +1,148 @@
 let currentBackgroundStyle = 'curves';
 let currentLogoPosition = 'top-right';
 let currentCyberOverlay = 'none';
+let currentLanguage = 'en';
+let customPresets = {};
+
+// Built-in presets stored directly in script to bypass offline CORS file blocks
+const BUILT_IN_PRESETS = {
+    "tzadik-he": {
+        calloutLeft: 'או סתם ללמוד איך האקרים חושבים ופועלים',
+        calloutRight: 'בואו לרכוש ידע שיכול להיות רלוונטי לקריירה שלכם!',
+        title1: 'מבוא לסייבר:',
+        title2: 'וירוסים ועד קריירות',
+        date: 'יום חמישי, 25.12.2025',
+        time: '14:00-15:00',
+        location: 'בניין 503 (מדע״ח) חדר 226',
+        speakerName: 'שם המרצה',
+        speakerRole: 'תפקיד המרצה / חברה',
+        theme: 'tzadik',
+        bgStyle: 'curves',
+        cyberOverlay: 'none',
+        logoVisible: true,
+        logoBg: false,
+        logoPosition: 'top-right',
+        logoSize: 95,
+        avatarZoom: 440,
+        avatarX: -154,
+        avatarY: -386,
+        fzTitle: 36,
+        fzCallouts: 15,
+        fzDetails: 19,
+        fzSpeaker: 22,
+        verticalShift: 0,
+        primaryColor: '#004124',
+        secondaryColor: '#71CCE7',
+        textDarkColor: '#0f2219',
+        textLightColor: '#000000',
+        layoutDirection: 'rtl',
+        uiLanguage: 'he',
+        speakerImgSrc: 'https://placehold.co/300x300/004124/71CCE7?text=Speaker',
+        logoImgSrc: 'Biu_tzadik_nobackground.png'
+    },
+    "tzadik-en": {
+        calloutLeft: 'Or just learn how hackers think and operate',
+        calloutRight: 'Come acquire knowledge that could be relevant to your career!',
+        title1: 'Introduction to Cyber:',
+        title2: 'From Viruses to Careers',
+        date: 'Thursday, 25.12.2025',
+        time: '14:00-15:00',
+        location: 'Building 503 (CS) Room 226',
+        speakerName: 'Speaker Name',
+        speakerRole: "Speaker's Role / Company",
+        theme: 'tzadik',
+        bgStyle: 'curves',
+        cyberOverlay: 'none',
+        logoVisible: true,
+        logoBg: false,
+        logoPosition: 'top-left',
+        logoSize: 95,
+        avatarZoom: 440,
+        avatarX: -154,
+        avatarY: -386,
+        fzTitle: 36,
+        fzCallouts: 15,
+        fzDetails: 19,
+        fzSpeaker: 22,
+        verticalShift: 0,
+        primaryColor: '#004124',
+        secondaryColor: '#71CCE7',
+        textDarkColor: '#0f2219',
+        textLightColor: '#000000',
+        layoutDirection: 'ltr',
+        uiLanguage: 'en',
+        speakerImgSrc: 'https://placehold.co/300x300/004124/71CCE7?text=Speaker',
+        logoImgSrc: 'Biu_tzadik_nobackground.png'
+    },
+    "original-he": {
+        calloutLeft: 'או סתם ללמוד איך האקרים חושבים ופועלים',
+        calloutRight: 'בואו לרכוש ידע שיכול להיות רלוונטי לקריירה שלכם!',
+        title1: 'מבוא לסייבר:',
+        title2: 'וירוסים ועד קריירות',
+        date: 'יום חמישי, 25.12.2025',
+        time: '14:00-15:00',
+        location: 'בניין 503 (מדע״ח) חדר 226',
+        speakerName: 'שם המרצה',
+        speakerRole: 'תפקיד המרצה / חברה',
+        theme: 'original',
+        bgStyle: 'curves',
+        cyberOverlay: 'none',
+        logoVisible: true,
+        logoBg: false,
+        logoPosition: 'top-right',
+        logoSize: 95,
+        avatarZoom: 440,
+        avatarX: -154,
+        avatarY: -386,
+        fzTitle: 36,
+        fzCallouts: 15,
+        fzDetails: 19,
+        fzSpeaker: 22,
+        verticalShift: 0,
+        primaryColor: '#091e36',
+        secondaryColor: '#00b0ff',
+        textDarkColor: '#081c33',
+        textLightColor: '#000000',
+        layoutDirection: 'rtl',
+        uiLanguage: 'he',
+        speakerImgSrc: 'https://placehold.co/300x300/091e36/00b0ff?text=Speaker',
+        logoImgSrc: 'Biu_tzadik_nobackground.png'
+    },
+    "original-en": {
+        calloutLeft: 'Or just learn how hackers think and operate',
+        calloutRight: 'Come acquire knowledge that could be relevant to your career!',
+        title1: 'Introduction to Cyber:',
+        title2: 'From Viruses to Careers',
+        date: 'Thursday, 25.12.2025',
+        time: '14:00-15:00',
+        location: 'Building 503 (CS) Room 226',
+        speakerName: 'Speaker Name',
+        speakerRole: "Speaker's Role / Company",
+        theme: 'original',
+        bgStyle: 'curves',
+        cyberOverlay: 'none',
+        logoVisible: true,
+        logoBg: false,
+        logoPosition: 'top-left',
+        logoSize: 95,
+        avatarZoom: 440,
+        avatarX: -154,
+        avatarY: -386,
+        fzTitle: 36,
+        fzCallouts: 15,
+        fzDetails: 19,
+        fzSpeaker: 22,
+        verticalShift: 0,
+        primaryColor: '#091e36',
+        secondaryColor: '#00b0ff',
+        textDarkColor: '#081c33',
+        textLightColor: '#000000',
+        layoutDirection: 'ltr',
+        uiLanguage: 'en',
+        speakerImgSrc: 'https://placehold.co/300x300/091e36/00b0ff?text=Speaker',
+        logoImgSrc: 'Biu_tzadik_nobackground.png'
+    }
+};
 
 // UI Tab Management
 function switchTab(tabId) {
@@ -8,15 +150,17 @@ function switchTab(tabId) {
     document.getElementById('panel-content').classList.add('hidden');
     document.getElementById('panel-design').classList.add('hidden');
     document.getElementById('panel-images').classList.add('hidden');
+    document.getElementById('panel-presets').classList.add('hidden');
 
     // Remove active button styles
-    document.getElementById('tab-content').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
-    document.getElementById('tab-design').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
-    document.getElementById('tab-images').className = "flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+    document.getElementById('tab-content').className = "flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+    document.getElementById('tab-design').className = "flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+    document.getElementById('tab-images').className = "flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+    document.getElementById('tab-presets').className = "flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
 
     // Show current
     document.getElementById(`panel-${tabId}`).classList.remove('hidden');
-    document.getElementById(`tab-${tabId}`).className = "flex-1 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition";
+    document.getElementById(`tab-${tabId}`).className = "flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition";
 }
 
 // Apply pre-designed corporate colors
@@ -359,6 +503,413 @@ function restoreOriginalSpeakerPreset() {
     updateAvatarAdjustment();
 }
 
+// Mobile scaling and viewport adjustment to fit A4 layout on phone widths
+function adjustPosterScale() {
+    const poster = document.getElementById('cyber-poster');
+    const scaleWrapper = document.getElementById('poster-scale-wrapper');
+    if (!poster || !scaleWrapper) return;
+
+    const mainElement = scaleWrapper.parentElement;
+    const parentWidth = mainElement.clientWidth;
+    const parentHeight = mainElement.clientHeight;
+
+    // Scale to fit both dimensions with some breathing padding (16px)
+    const scaleX = (parentWidth - 16) / 595;
+    const scaleY = (parentHeight - 16) / 842;
+    let scale = Math.min(scaleX, scaleY);
+
+    if (scale > 1.05) scale = 1.05; // Cap upscale
+    if (scale < 0.15) scale = 0.15; // Floor downscale
+
+    scaleWrapper.style.transform = `scale(${scale})`;
+    scaleWrapper.style.transformOrigin = 'center center';
+
+    // Fix bounds to prevent parent container layout collapses
+    scaleWrapper.style.width = '595px';
+    scaleWrapper.style.height = '842px';
+}
+
+// Set dynamic text and element layouts on the poster for LTR (English) or RTL (Hebrew)
+function setPosterDirection(dir) {
+    const poster = document.getElementById('cyber-poster');
+    const midSection = document.getElementById('poster-mid-section');
+    const detailsContainer = document.getElementById('poster-details-container');
+    const titleContainer = document.getElementById('poster-title-1').parentElement;
+    const calloutLeft = document.getElementById('container-callout-left');
+    const calloutRight = document.getElementById('container-callout-right');
+    const speakerInfo = document.getElementById('poster-speaker-name').parentElement;
+
+    if (!poster) return;
+
+    if (dir === 'ltr') {
+        poster.setAttribute('dir', 'ltr');
+
+        [calloutLeft, calloutRight, titleContainer, detailsContainer, speakerInfo].forEach(el => {
+            if (el) {
+                el.classList.remove('text-right');
+                el.classList.add('text-left');
+            }
+        });
+
+        if (midSection) {
+            midSection.classList.remove('pr-2');
+            midSection.classList.add('pl-2');
+        }
+        if (detailsContainer) {
+            detailsContainer.classList.remove('pr-1');
+            detailsContainer.classList.add('pl-1');
+        }
+        if (speakerInfo) {
+            speakerInfo.classList.remove('pr-2');
+            speakerInfo.classList.add('pl-2');
+        }
+
+        if (detailsContainer) {
+            Array.from(detailsContainer.children).forEach(child => {
+                child.classList.remove('flex-row-reverse');
+                child.classList.add('flex-row');
+            });
+        }
+    } else {
+        poster.setAttribute('dir', 'rtl');
+
+        [calloutLeft, calloutRight, titleContainer, detailsContainer, speakerInfo].forEach(el => {
+            if (el) {
+                el.classList.remove('text-left');
+                el.classList.add('text-right');
+            }
+        });
+
+        if (midSection) {
+            midSection.classList.remove('pl-2');
+            midSection.classList.add('pr-2');
+        }
+        if (detailsContainer) {
+            detailsContainer.classList.remove('pl-1');
+            detailsContainer.classList.add('pr-1');
+        }
+        if (speakerInfo) {
+            speakerInfo.classList.remove('pl-2');
+            speakerInfo.classList.add('pr-2');
+        }
+
+        if (detailsContainer) {
+            Array.from(detailsContainer.children).forEach(child => {
+                child.classList.remove('flex-row');
+                child.classList.add('flex-row-reverse');
+            });
+        }
+    }
+}
+
+// Translate HTML elements and set text layouts
+function setUILanguage(lang) {
+    currentLanguage = lang;
+    
+    document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+
+    // Toggle button active states in presets tab
+    const btnHe = document.getElementById('btn-lang-he');
+    const btnEn = document.getElementById('btn-lang-en');
+    
+    if (btnHe && btnEn) {
+        if (lang === 'he') {
+            btnHe.className = "flex-1 py-2 text-xs font-bold rounded-lg transition border border-emerald-500 bg-emerald-950/20 text-emerald-400";
+            btnEn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300";
+        } else {
+            btnEn.className = "flex-1 py-2 text-xs font-bold rounded-lg transition border border-emerald-500 bg-emerald-950/20 text-emerald-400";
+            btnHe.className = "flex-1 py-2 text-xs font-bold rounded-lg transition border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300";
+        }
+    }
+
+    // Dynamic node replacement loop
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (UI_TRANSLATIONS[lang] && UI_TRANSLATIONS[lang][key]) {
+            translateElement(el, UI_TRANSLATIONS[lang][key]);
+        }
+    });
+
+    const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+    placeholders.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (UI_TRANSLATIONS[lang] && UI_TRANSLATIONS[lang][key]) {
+            el.setAttribute('placeholder', UI_TRANSLATIONS[lang][key]);
+        }
+    });
+
+    // Redraw select options to show translated labels
+    populatePresetDropdown();
+    adjustPosterScale();
+}
+
+function translateElement(el, translation) {
+    const svg = el.querySelector('svg');
+    if (svg) {
+        svg.remove();
+        el.textContent = ' ' + translation;
+        el.insertBefore(svg, el.firstChild);
+    } else {
+        el.textContent = translation;
+    }
+}
+
+// Preset management algorithms
+function populatePresetDropdown(activeValue = "") {
+    const select = document.getElementById('select-preset');
+    if (!select) return;
+
+    const prevVal = select.value;
+    select.innerHTML = '';
+
+    // Built-ins
+    for (const key in BUILT_IN_PRESETS) {
+        const opt = document.createElement('option');
+        opt.value = "built-in:" + key;
+        opt.textContent = key.includes('-he') ? `ערכה מובנית: ${key.replace('-he', ' עברית')}` : `Built-in: ${key.replace('-en', ' English')}`;
+        select.appendChild(opt);
+    }
+
+    // In-memory saves
+    const customKeys = Object.keys(customPresets);
+    if (customKeys.length > 0) {
+        const divider = document.createElement('option');
+        divider.disabled = true;
+        divider.textContent = currentLanguage === 'he' ? '─── שמור בזיכרון ───' : '─── Saved in Memory ───';
+        select.appendChild(divider);
+
+        customKeys.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = "custom:" + name;
+            opt.textContent = name;
+            select.appendChild(opt);
+        });
+    }
+
+    if (activeValue) {
+        select.value = activeValue;
+    } else if (prevVal && select.querySelector(`option[value="${prevVal}"]`)) {
+        select.value = prevVal;
+    }
+}
+
+function handlePresetSelect(val) {
+    if (val.startsWith("built-in:")) {
+        const key = val.replace("built-in:", "");
+        loadPresetState(BUILT_IN_PRESETS[key]);
+    } else if (val.startsWith("custom:")) {
+        const name = val.replace("custom:", "");
+        loadPresetState(customPresets[name]);
+    }
+}
+
+function getCurrentStateAsPreset(name = "") {
+    return {
+        name: name,
+        calloutLeft: document.getElementById('input-callout-left').value,
+        calloutRight: document.getElementById('input-callout-right').value,
+        title1: document.getElementById('input-title-1').value,
+        title2: document.getElementById('input-title-2').value,
+        date: document.getElementById('input-date').value,
+        time: document.getElementById('input-time').value,
+        location: document.getElementById('input-location').value,
+        speakerName: document.getElementById('input-speaker-name').value,
+        speakerRole: document.getElementById('input-speaker-role').value,
+
+        theme: document.getElementById('color-primary').value === '#004124' ? 'tzadik' : 'custom',
+        bgStyle: currentBackgroundStyle,
+        cyberOverlay: currentCyberOverlay,
+
+        logoVisible: document.getElementById('toggle-logo').checked,
+        logoBg: document.getElementById('toggle-logo-bg').checked,
+        logoPosition: currentLogoPosition,
+        logoSize: parseInt(document.getElementById('logo-size').value),
+
+        avatarZoom: parseInt(document.getElementById('avatar-zoom').value),
+        avatarX: parseInt(document.getElementById('avatar-x').value),
+        avatarY: parseInt(document.getElementById('avatar-y').value),
+
+        fzTitle: parseInt(document.getElementById('slider-fz-title').value),
+        fzCallouts: parseInt(document.getElementById('slider-fz-callouts').value),
+        fzDetails: parseInt(document.getElementById('slider-fz-details').value),
+        fzSpeaker: parseInt(document.getElementById('slider-fz-speaker').value),
+        verticalShift: parseInt(document.getElementById('slider-vertical-shift').value),
+
+        primaryColor: document.getElementById('color-primary').value,
+        secondaryColor: document.getElementById('color-secondary').value,
+        textDarkColor: document.getElementById('color-text-on-light').value,
+        textLightColor: document.getElementById('color-text-on-dark').value,
+
+        layoutDirection: document.getElementById('cyber-poster').getAttribute('dir') || 'rtl',
+        uiLanguage: currentLanguage,
+        speakerImgSrc: document.getElementById('poster-speaker-img').getAttribute('src') || document.getElementById('poster-speaker-img').src,
+        logoImgSrc: document.getElementById('poster-logo').getAttribute('src') || document.getElementById('poster-logo').src
+    };
+}
+
+function loadPresetState(preset) {
+    if (!preset) return;
+
+    // Apply values
+    document.getElementById('input-callout-left').value = preset.calloutLeft;
+    document.getElementById('input-callout-right').value = preset.calloutRight;
+    document.getElementById('input-title-1').value = preset.title1;
+    document.getElementById('input-title-2').value = preset.title2;
+    document.getElementById('input-date').value = preset.date;
+    document.getElementById('input-time').value = preset.time;
+    document.getElementById('input-location').value = preset.location;
+    document.getElementById('input-speaker-name').value = preset.speakerName;
+    document.getElementById('input-speaker-role').value = preset.speakerRole;
+
+    // Apply layout bounds
+    document.getElementById('slider-fz-title').value = preset.fzTitle;
+    document.getElementById('slider-fz-callouts').value = preset.fzCallouts;
+    document.getElementById('slider-fz-details').value = preset.fzDetails;
+    document.getElementById('slider-fz-speaker').value = preset.fzSpeaker;
+    document.getElementById('slider-vertical-shift').value = preset.verticalShift;
+
+    // Apply logos
+    document.getElementById('toggle-logo').checked = preset.logoVisible;
+    document.getElementById('toggle-logo-bg').checked = preset.logoBg;
+    document.getElementById('logo-size').value = preset.logoSize;
+
+    // Apply colors
+    document.getElementById('color-primary').value = preset.primaryColor;
+    document.getElementById('color-secondary').value = preset.secondaryColor;
+    document.getElementById('color-text-on-light').value = preset.textDarkColor;
+    document.getElementById('color-text-on-dark').value = preset.textLightColor;
+
+    document.getElementById('color-primary-hex').value = preset.primaryColor;
+    document.getElementById('color-secondary-hex').value = preset.secondaryColor;
+    document.getElementById('color-text-on-light-hex').value = preset.textDarkColor;
+    document.getElementById('color-text-on-dark-hex').value = preset.textLightColor;
+
+    // Apply speaker and logo images if present
+    const speakerImg = document.getElementById('poster-speaker-img');
+    if (preset.speakerImgSrc) {
+        speakerImg.src = preset.speakerImgSrc;
+    } else {
+        speakerImg.src = DEFAULTS.speakerImgSrc;
+    }
+
+    const logoImg = document.getElementById('poster-logo');
+    if (preset.logoImgSrc) {
+        logoImg.src = preset.logoImgSrc;
+        logoImg.style.display = 'block';
+        document.getElementById('poster-logo-svg-fallback').classList.add('hidden');
+    } else {
+        logoImg.src = DEFAULTS.logoImgSrc;
+        logoImg.style.display = 'block';
+        document.getElementById('poster-logo-svg-fallback').classList.add('hidden');
+    }
+
+    // Set variables
+    applyBackgroundStyle(preset.bgStyle);
+    
+    if (document.getElementById('select-cyber-overlay')) {
+        document.getElementById('select-cyber-overlay').value = preset.cyberOverlay;
+    }
+    applyCyberOverlay(preset.cyberOverlay);
+
+    updateLogoScale(preset.logoSize);
+    updateLogoVisibility();
+    updateLogoBackground();
+    setLogoPosition(preset.logoPosition);
+
+    document.getElementById('avatar-zoom').value = preset.avatarZoom;
+    document.getElementById('avatar-x').value = preset.avatarX;
+    document.getElementById('avatar-y').value = preset.avatarY;
+    updateAvatarAdjustment();
+
+    setPosterDirection(preset.layoutDirection || 'rtl');
+
+    // Fire render refreshes
+    updateColors();
+    updatePoster();
+    updateLayoutSizes();
+
+    if (preset.uiLanguage && preset.uiLanguage !== currentLanguage) {
+        setUILanguage(preset.uiLanguage);
+    }
+}
+
+// In-Memory Quick Saves array storage
+function saveCurrentToMemory() {
+    const nameInput = document.getElementById('input-memory-preset-name');
+    const name = nameInput.value.trim();
+
+    if (!name) {
+        const errorMsg = currentLanguage === 'he' ? "נא להזין שם עבור הערכה השמורה." : "Please enter a name for the saved preset.";
+        alert(errorMsg);
+        return;
+    }
+
+    const preset = getCurrentStateAsPreset(name);
+    customPresets[name] = preset;
+
+    // Rebuild options list and select the new custom item
+    populatePresetDropdown("custom:" + name);
+    nameInput.value = '';
+
+    const successMsg = currentLanguage === 'he' ? `הערכה "${name}" נשמרה בזיכרון המקומי.` : `Preset "${name}" saved to session memory.`;
+    alert(successMsg);
+}
+
+// JSON file system exports
+function exportCurrentPreset() {
+    const nameInput = document.getElementById('input-memory-preset-name');
+    const presetName = nameInput.value.trim() || document.getElementById('poster-speaker-name').innerText + "_preset";
+    const preset = getCurrentStateAsPreset(presetName);
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(preset, null, 4));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", presetName.replace(/\s+/g, '_') + ".json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// JSON file system imports
+function handlePresetFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            
+            // Perform light validation to make sure schema is correct
+            if (!parsed.calloutLeft || !parsed.title1 || !parsed.primaryColor) {
+                throw new Error("Invalid preset schema structure.");
+            }
+
+            const presetName = parsed.name || file.name.replace(".json", "");
+            parsed.name = presetName;
+
+            // Save in-memory
+            customPresets[presetName] = parsed;
+            
+            // Select and load
+            populatePresetDropdown("custom:" + presetName);
+            loadPresetState(parsed);
+
+            const successMsg = currentLanguage === 'he' ? "ערכת ה-JSON נטענה בהצלחה!" : "JSON preset loaded successfully!";
+            alert(successMsg);
+        } catch (err) {
+            console.error("JSON Preset parsing error:", err);
+            const errorMsg = currentLanguage === 'he' ? "שגיאה בטעינת הקובץ: קובץ ה-JSON אינו תקין." : "Error loading file: Invalid JSON preset structure.";
+            alert(errorMsg);
+        }
+        // Reset file input
+        event.target.value = '';
+    };
+    reader.readAsText(file);
+}
+
 // Reset whole app to standard defaults
 function resetToDefaults() {
     // Reset visibility of images
@@ -411,6 +962,9 @@ function resetToDefaults() {
     restoreOriginalSpeakerPreset();
     updatePoster();
     updateLayoutSizes();
+    
+    // Set UI language to English default on reset
+    setUILanguage('en');
 }
 
 // Export poster to PNG File
@@ -423,10 +977,15 @@ function downloadPNG() {
     msgBox.innerHTML = `
         <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center gap-4 max-w-sm text-center">
             <svg class="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span>מייצר קובץ תמונה באיכות גבוהה... נא להמתין</span>
+            <span data-i18n="png-msg">מייצר קובץ תמונה באיכות גבוהה... נא להמתין</span>
         </div>
     `;
     document.body.appendChild(msgBox);
+
+    // Swap text for high-DPI message if English
+    if (currentLanguage === 'en') {
+        msgBox.querySelector('span').textContent = "Generating high-quality image file... Please wait";
+    }
 
     // Use html2canvas to capture vector details correctly
     html2canvas(poster, {
@@ -451,7 +1010,11 @@ function printPoster() {
     window.print();
 }
 
-// Kick off on load
+// Listeners and kick off triggers
+window.addEventListener('resize', adjustPosterScale);
+
 window.onload = function () {
     resetToDefaults();
+    populatePresetDropdown();
+    adjustPosterScale();
 }
