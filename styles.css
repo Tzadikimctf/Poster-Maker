@@ -12,14 +12,42 @@ body {
 
 /* Hide UI controls during printing so only the poster is printed */
 @media print {
-    body {
-        background: white;
-        margin: 0;
-        padding: 0;
+    /* Force browser to print all background colors, gradients, and graphics exactly as they appear */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
-    .no-print {
+    /* Reset everything on body so the poster can fill the page */
+    body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    /* Hide all non-print UI (header, sidebar, buttons) */
+    .no-print,
+    header,
+    aside {
         display: none !important;
+    }
+
+    /* The outer flex wrapper that holds aside + main */
+    body > div {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    /* The main canvas container */
+    main {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+        padding: 0 !important;
+        flex: none !important;
     }
 
     /* Remove the scale wrapper transform so the poster prints at full A4 size */
@@ -27,15 +55,11 @@ body {
         transform: none !important;
         width: auto !important;
         height: auto !important;
-    }
-
-    /* Ensure the main canvas container doesn't clip or restrict the poster */
-    main {
+        display: block !important;
         overflow: visible !important;
-        height: auto !important;
-        padding: 0 !important;
     }
 
+    /* The poster itself: fill the printed page exactly */
     .print-area {
         position: absolute;
         top: 0;
@@ -47,6 +71,12 @@ body {
         border: none !important;
         border-radius: 0 !important;
         margin: 0 !important;
+        overflow: hidden;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 0;
     }
 }
 
