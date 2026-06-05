@@ -41,7 +41,7 @@
         </div>
         <div class="flex items-center gap-3 flex-wrap justify-center">
             <button onclick="resetToDefaults()"
-                class="px-4 py-2 text-sm bg-slate-850 hover:bg-slate-800 hover:text-white text-slate-300 font-semibold rounded-lg border border-slate-700 transition flex items-center gap-2"
+                class="px-4 py-2 text-sm bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 font-semibold rounded-lg border border-slate-700 transition flex items-center gap-2"
                 data-i18n="btn-reset-defaults">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -226,7 +226,7 @@
                                 <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-indigo-600"></div>
                             </label>
                         </div>
-                        <button id="btn-reset-layout" onclick="resetAdvancedLayout()" class="w-full mt-3 py-1.5 bg-slate-950 border border-slate-850 hover:bg-slate-800 text-[11px] font-semibold text-slate-300 rounded transition hidden" data-i18n="btn-reset-layout">
+                        <button id="btn-reset-layout" onclick="resetAdvancedLayout()" class="w-full mt-3 py-1.5 bg-slate-950 border border-slate-800 hover:bg-slate-800 text-[11px] font-semibold text-slate-300 rounded transition hidden" data-i18n="btn-reset-layout">
                             איפוס פריסה ידנית
                         </button>
                     </div>
@@ -362,21 +362,21 @@
                                             data-i18n="lbl-custom-bg-tl">צורת שמאל למעלה (Top-Left Shape):</label>
                                         <input type="text" id="input-custom-bg-tl" data-testid="input-custom-bg-tl"
                                             placeholder="e.g. M0 0H200V200Z"
-                                            class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                            class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] text-slate-400 mb-0.5"
                                             data-i18n="lbl-custom-bg-mr">צורת ימין אמצע (Mid-Right Shape):</label>
                                         <input type="text" id="input-custom-bg-mr" data-testid="input-custom-bg-mr"
                                             placeholder="e.g. M595 200H450V400H595Z"
-                                            class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                            class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] text-slate-400 mb-0.5"
                                             data-i18n="lbl-custom-bg-br">צורת ימין למטה (Bottom-Right Shape):</label>
                                         <input type="text" id="input-custom-bg-br" data-testid="input-custom-bg-br"
                                             placeholder="e.g. M595 600H350V842H595Z"
-                                            class="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                                            class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
                                     </div>
                                     <button onclick="applyCustomBackground()" data-testid="btn-apply-custom-bg"
                                         class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-xs transition"
@@ -804,7 +804,8 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- End of standard-editor-container -->
+            </div> <!-- End of flex-1 overflow-y-auto -->
+        </div> <!-- End of standard-editor-container -->
 
             <!-- Advanced Layers Panel -->
             <div id="panel-advanced-layers" class="flex-1 flex flex-col overflow-hidden hidden">

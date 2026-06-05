@@ -401,7 +401,7 @@ function renderLayerSettingsForm(layer) {
     const inputName = document.createElement('input');
     inputName.type = 'text';
     inputName.value = layer.name;
-    inputName.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
+    inputName.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
     inputName.oninput = () => {
         layer.name = inputName.value;
         populateAdvancedLayersList();
@@ -456,7 +456,7 @@ function renderLayerSettingsForm(layer) {
         const taText = document.createElement('textarea');
         taText.rows = 3;
         taText.value = layer.text || '';
-        taText.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500';
+        taText.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500';
         taText.oninput = () => {
             layer.text = taText.value;
             renderPosterLayers();
@@ -487,7 +487,7 @@ function renderLayerSettingsForm(layer) {
         // Font Family dropdown
         const gFont = createFormGroup('סוג גופן (Font Family):');
         const selFont = document.createElement('select');
-        selFont.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
+        selFont.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
         const families = {
             'font-secular': 'Secular One (Title)',
             'font-varela': 'Varela Round (Sub)',
@@ -510,7 +510,7 @@ function renderLayerSettingsForm(layer) {
         // Color Mode dropdown
         const gColor = createFormGroup('צבע (Color Mode):');
         const selColor = document.createElement('select');
-        selColor.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white mb-2';
+        selColor.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white mb-2';
         const modes = {
             'theme-light': 'צבע על רקע בהיר (Theme Light)',
             'theme-dark': 'צבע על רקע כהה (Theme Dark)',
@@ -533,7 +533,7 @@ function renderLayerSettingsForm(layer) {
         const inputColorHex = document.createElement('input');
         inputColorHex.type = 'text';
         inputColorHex.value = layer.colorHex || '#ffffff';
-        inputColorHex.className = 'w-24 bg-slate-955 border border-slate-800 rounded px-2 py-1 text-xs text-center text-white';
+        inputColorHex.className = 'w-24 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-center text-white';
 
         pickerColor.oninput = () => {
             layer.colorHex = pickerColor.value;
@@ -571,7 +571,7 @@ function renderLayerSettingsForm(layer) {
         // Alignment dropdown
         const gAlign = createFormGroup('יישור טקסט (Alignment):');
         const selAlign = document.createElement('select');
-        selAlign.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
+        selAlign.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white';
         const aligns = {
             'auto': 'יישור אוטומטי (Auto - LTR/RTL)',
             'left': 'שמאל (Left)',
@@ -600,7 +600,7 @@ function renderLayerSettingsForm(layer) {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
-        fileInput.className = 'w-full text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-955 file:text-indigo-400 hover:file:bg-slate-900 cursor-pointer';
+        fileInput.className = 'w-full text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-indigo-400 hover:file:bg-slate-800 cursor-pointer';
         fileInput.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -618,7 +618,7 @@ function renderLayerSettingsForm(layer) {
         // Image shape
         const gShape = createFormGroup('צורת תמונה (Shape):');
         const selShape = document.createElement('select');
-        selShape.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white mb-2';
+        selShape.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white mb-2';
         const shapes = {
             'rect': 'מלבני (Rectangle / Logo)',
             'circle': 'עיגול (Circle / Speaker Portrait)'
@@ -633,7 +633,7 @@ function renderLayerSettingsForm(layer) {
 
         // Crop Sliders container
         const cropContainer = document.createElement('div');
-        cropContainer.className = 'space-y-3 bg-slate-955 p-3 rounded-lg border border-slate-850 hidden';
+        cropContainer.className = 'space-y-3 bg-slate-900 p-3 rounded-lg border border-slate-800 hidden';
 
         // Zoom Slider
         const zLabel = document.createElement('label');
@@ -743,7 +743,7 @@ function renderLayerSettingsForm(layer) {
         const inputBgHex = document.createElement('input');
         inputBgHex.type = 'text';
         inputBgHex.value = layer.bgColorHex || '#ffffff';
-        inputBgHex.className = 'w-24 bg-slate-955 border border-slate-800 rounded px-2 py-1 text-xs text-center text-white';
+        inputBgHex.className = 'w-24 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-center text-white';
 
         pickerBg.oninput = () => {
             layer.bgColorHex = pickerBg.value;
@@ -802,7 +802,7 @@ function renderLayerSettingsForm(layer) {
         sTypeLabel.className = 'text-[10px] text-slate-500';
         sTypeLabel.textContent = 'סגנון צל:';
         const selSType = document.createElement('select');
-        selSType.className = 'bg-slate-955 border border-slate-800 rounded px-2 py-1 text-[11px] text-white';
+        selSType.className = 'bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[11px] text-white';
         const stypes = {
             'glow': 'הילה (Glow)',
             'outline': 'מסגרת (Outline)'
@@ -876,7 +876,7 @@ function createNumberInput(initialValue, onUpdate) {
     const input = document.createElement('input');
     input.type = 'number';
     input.value = initialValue;
-    input.className = 'w-full bg-slate-955 border border-slate-800 rounded px-2.5 py-1 text-xs text-white font-mono';
+    input.className = 'w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-white font-mono';
     input.oninput = () => {
         const val = parseInt(input.value) || 0;
         onUpdate(val);
