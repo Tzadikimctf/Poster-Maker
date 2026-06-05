@@ -79,32 +79,45 @@
         <!-- Left Column: Controls Sidebar -->
         <aside
             class="no-print w-full lg:w-[420px] h-[55vh] lg:h-full bg-slate-950 border-l border-slate-800 flex flex-col overflow-hidden">
-            <!-- Tabs Header -->
-            <div class="border-b border-slate-800 flex bg-slate-900/50 sticky top-0 z-10 backdrop-blur-md flex-wrap">
-                <button onclick="switchTab('content')" id="tab-content"
-                    class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition"
-                    data-i18n="tab-content">
-                    תוכן וטקסטים
+            <!-- Sidebar Mode Toggle -->
+            <div class="p-3 bg-slate-900 border-b border-slate-800 flex gap-2">
+                <button type="button" id="btn-mode-standard" onclick="setSidebarMode('standard')"
+                    class="flex-1 py-2 text-[11px] font-bold rounded-lg transition border border-emerald-500 bg-emerald-950/20 text-emerald-400">
+                    עורך רגיל (Standard)
                 </button>
-                <button onclick="switchTab('design')" id="tab-design"
-                    class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
-                    data-i18n="tab-design">
-                    עיצוב ומידות גופן
-                </button>
-                <button onclick="switchTab('images')" id="tab-images"
-                    class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
-                    data-i18n="tab-images">
-                    תמונות ומיקום
-                </button>
-                <button onclick="switchTab('presets')" id="tab-presets"
-                    class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
-                    data-i18n="tab-presets">
-                    ערכות שמורות
+                <button type="button" id="btn-mode-advanced" onclick="setSidebarMode('advanced')"
+                    class="flex-1 py-2 text-[11px] font-bold rounded-lg transition border border-slate-700 bg-slate-950 text-slate-400 hover:text-slate-200">
+                    מנהל שכבות (Layers)
                 </button>
             </div>
 
-            <!-- Scrollable Tab Content Panels -->
-            <div class="flex-1 overflow-y-auto">
+            <div id="standard-editor-container" class="flex-1 flex flex-col overflow-hidden">
+                <!-- Tabs Header -->
+                <div class="border-b border-slate-800 flex bg-slate-900/50 sticky top-0 z-10 backdrop-blur-md flex-wrap">
+                    <button onclick="switchTab('content')" id="tab-content"
+                        class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 transition"
+                        data-i18n="tab-content">
+                        תוכן וטקסטים
+                    </button>
+                    <button onclick="switchTab('design')" id="tab-design"
+                        class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
+                        data-i18n="tab-design">
+                        עיצוב ומידות גופן
+                    </button>
+                    <button onclick="switchTab('images')" id="tab-images"
+                        class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
+                        data-i18n="tab-images">
+                        תמונות ומיקום
+                    </button>
+                    <button onclick="switchTab('presets')" id="tab-presets"
+                        class="flex-1 py-3 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition"
+                        data-i18n="tab-presets">
+                        ערכות שמורות
+                    </button>
+                </div>
+
+                <!-- Scrollable Tab Content Panels -->
+                <div class="flex-1 overflow-y-auto">
                 <div id="panel-content" class="p-6 space-y-6">
                     <!-- Top Callouts -->
                     <div>
@@ -791,6 +804,46 @@
                         </div>
                     </div>
                 </div>
+            </div> <!-- End of standard-editor-container -->
+
+            <!-- Advanced Layers Panel -->
+            <div id="panel-advanced-layers" class="flex-1 flex flex-col overflow-hidden hidden">
+                <!-- Action bar -->
+                <div class="p-4 border-b border-slate-800 flex gap-2 justify-between bg-slate-900/40">
+                    <button onclick="addCustomTextLayer()" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/10">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        טקסט חדש (Text)
+                    </button>
+                    <button onclick="addCustomImageLayer()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        תמונה חדשה (Image)
+                    </button>
+                </div>
+                
+                <!-- Split content: top list (grow), bottom editor (scrollable) -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <!-- Layer Tree List Card -->
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="lbl-layer-list">רשימת שכבות (Layers)</h4>
+                        <div id="layers-list-container" class="space-y-1 bg-slate-900/60 border border-slate-800 rounded-xl p-2 max-h-[180px] overflow-y-auto">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800">
+
+                    <!-- Selected Layer Settings Form -->
+                    <div id="layer-settings-container" class="bg-slate-900 border border-slate-800 rounded-xl p-4 hidden">
+                        <!-- Controls generated dynamically based on active selection -->
+                    </div>
+                    <div id="layer-no-selection-msg" class="text-center py-8 text-xs text-slate-500 italic">
+                        בחר שכבה כדי לערוך את תכונותיה (Select a layer to edit)
+                    </div>
+                </div>
             </div>
 
             <!-- Sidebar Sticky Footer: Reset Button -->
@@ -1117,134 +1170,10 @@
                         </g>
                     </svg>
 
-                    <!-- Brand Logo Element - Absolute positioning over entire canvas layout (Z-30) -->
-                    <div id="poster-logo-container" class="absolute z-30 transition-all duration-200"
-                        style="display: block;">
-                        <!-- Image loader for local file -->
-                        <img id="poster-logo" src="Biu_tzadik_nobackground.png" alt="לוגו"
-                            style="width: 95px; height: auto;" onerror="handleLogoError(this)">
-                        <!-- Interactive SVG Fallback -->
-                        <div id="poster-logo-svg-fallback" class="hidden" style="width: 95px; height: 95px;">
-                            <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                class="w-full h-full">
-                                <rect x="94" y="272" width="135" height="58" rx="16" fill="#71CCE7"
-                                    class="logo-fallback-accent" />
-                                <rect x="81" y="81" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="126" y="126" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="171" y="171" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="171" y="216" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="299" y="81" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="254" y="126" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="211" y="171" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="211" y="216" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                                <rect x="211" y="254" width="57" height="57" rx="16" fill="#004124"
-                                    class="logo-fallback-primary" />
-                            </svg>
-                        </div>
-                    </div>
+                    <!-- Unified Dynamic Layers Container -->
+                    <div id="poster-layers-container" class="absolute inset-0 overflow-hidden select-none z-10 pointer-events-none"></div>
 
-                    <!-- Inner Content Container overlayed on SVGs -->
-                    <div class="absolute inset-0 p-8 flex flex-col justify-between select-none z-10">
 
-                        <!-- Top Header Section (Two-column callouts - with dynamic padding to adjust for Logo) -->
-                        <div id="poster-header-section" class="flex justify-between items-start pt-2 gap-4">
-                            <!-- Left Callout Box -->
-                            <div id="container-callout-left" class="w-[230px] pr-2 text-right transition-all">
-                                <p id="poster-callout-left"
-                                    class="text-slate-900 text-[15px] font-bold leading-snug tracking-tight break-words">
-                                    או סתם ללמוד איך האקרים חושבים ופועלים
-                                </p>
-                            </div>
-
-                            <!-- Right Callout Box -->
-                            <div id="container-callout-right" class="w-[240px] pl-3 text-right transition-all">
-                                <p id="poster-callout-right"
-                                    class="text-black text-[15px] font-bold leading-snug tracking-tight break-words">
-                                    בואו לרכוש ידע שיכול להיות רלוונטי לקריירה שלכם!
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Middle Content Section (Titles & Event Information) -->
-                        <div id="poster-mid-section"
-                            class="flex-1 flex flex-col justify-center pr-2 mt-2 transition-all"
-                            style="margin-top: 0px;">
-
-                            <!-- Main Topic & Title -->
-                            <div id="poster-title-container" class="mb-10 text-right">
-                                <h2 id="poster-title-1"
-                                    class="poster-font-title text-black text-[36px] font-extrabold tracking-wide leading-tight drop-shadow-sm break-words">
-                                    מבוא לסייבר:
-                                </h2>
-                                <h2 id="poster-title-2"
-                                    class="poster-font-title text-black text-[34px] font-extrabold tracking-wide leading-tight mt-1 drop-shadow-sm break-words">
-                                    וירוסים ועד קריירות
-                                </h2>
-                            </div>
-
-                            <!-- Info details box -->
-                            <div id="poster-details-container" class="space-y-3.5 text-right pr-1">
-                                <!-- Date -->
-                                <div class="flex items-center justify-start flex-row-reverse gap-3">
-                                    <span id="poster-date"
-                                        class="poster-font-sub text-black text-[19px] font-bold tracking-normal break-words">
-                                        יום חמישי, 25.12.2025
-                                    </span>
-                                </div>
-                                <!-- Time -->
-                                <div class="flex items-center justify-start flex-row-reverse gap-3">
-                                    <span id="poster-time"
-                                        class="poster-font-sub text-black text-[19px] font-bold tracking-normal break-words">
-                                        14:00-15:00
-                                    </span>
-                                </div>
-                                <!-- Location -->
-                                <div class="flex items-center justify-start flex-row-reverse gap-3">
-                                    <span id="poster-location"
-                                        class="poster-font-sub text-black text-[17px] font-bold tracking-normal break-words">
-                                        בניין 503 (מדע״ח) חדר 226
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bottom Footer Section (Speaker Info and Avatar) -->
-                        <div id="poster-speaker-container" class="relative h-[180px] flex items-end justify-between">
-
-                            <!-- Left Aligned Speaker Details -->
-                            <div class="mb-4 text-right flex-1 pr-2 max-w-[340px]">
-                                <h3 id="poster-speaker-name"
-                                    class="poster-font-title text-black text-[22px] font-bold tracking-wide break-words">
-                                    יאיר אולמייב
-                                </h3>
-                                <p id="poster-speaker-role"
-                                    class="poster-font-sub text-black text-[13px] font-medium tracking-wide mt-1 break-words">
-                                    Senior Security Researcher @ CYE
-                                </p>
-                            </div>
-
-                            <!-- Right Aligned Circular Speaker Portrait -->
-                            <div
-                                class="relative w-[150px] h-[150px] rounded-full border-4 border-[#004124] bg-[#004124] shadow-xl overflow-hidden z-10 flex-shrink-0">
-                                <!-- Zoom/Pan relative cropping frame -->
-                                <div class="absolute inset-0 w-full h-full overflow-hidden rounded-full">
-                                    <img id="poster-speaker-img" src="image_6ca388.jpg" alt="מרצה"
-                                        class="absolute max-w-none origin-top-left"
-                                        style="width: 440%; left: -154px; top: -386px;"
-                                        onerror="this.src='https://placehold.co/300x300/004124/71CCE7?text=Yair'">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
@@ -1252,6 +1181,13 @@
 
     <!-- Modular Config & Logic Scripts -->
     <script src="config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/logo-speaker.js"></script>
+    <script src="js/presets-db.js"></script>
+    <script src="js/layers-engine.js"></script>
+    <script src="js/drag-drop.js"></script>
+    <script src="js/export.js"></script>
     <script src="app.js"></script>
 </body>
 
