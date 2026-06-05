@@ -119,3 +119,38 @@ body {
     background-color: rgba(99, 102, 241, 0.1) !important;
     z-index: 40 !important; /* Ensure dragged element is on top */
 }
+
+/* Resize handle styling */
+.resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #6366f1; /* Indigo-500 */
+    border: 1.5px solid white;
+    border-radius: 50%;
+    cursor: nwse-resize;
+    z-index: 100;
+}
+.resize-handle:hover {
+    background-color: #4f46e5; /* Indigo-600 */
+    transform: scale(1.2);
+}
+
+/* Alignment Guide Lines */
+.guide-line {
+    position: absolute;
+    background-color: #ec4899; /* Pink-500 */
+    pointer-events: none;
+    z-index: 90;
+    transition: opacity 0.1s;
+}
+.guide-line-v {
+    width: 1.5px;
+    top: 0;
+    bottom: 0;
+}
+.guide-line-h {
+    height: 1.5px;
+    left: 0;
+    right: 0;
+}

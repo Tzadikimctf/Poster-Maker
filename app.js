@@ -1696,6 +1696,90 @@ let dragStartY = 0;
 let dragStartLeft = 0;
 let dragStartTop = 0;
 
+let activeResizedElement = null;
+let resizeStartWidth = 0;
+let resizeStartHeight = 0;
+let resizeStartX = 0;
+let resizeStartY = 0;
+
+function ensureResizeHandle(el) {
+    if (!el.querySelector('.resize-handle')) {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle resize-handle-br no-print';
+        
+        handle.addEventListener('mousedown', (e) => {
+            initResize(e, el);
+        });
+        handle.addEventListener('touchstart', (e) => {
+            initResize(e, el);
+        }, { passive: false });
+        
+        el.appendChild(handle);
+    }
+}
+
+function initResize(e, el) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    activeResizedElement = el;
+    el.classList.add('adv-resizing');
+    
+    const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+    
+    resizeStartX = clientX;
+    resizeStartY = clientY;
+    
+    const scale = getPosterScale();
+    const rect = el.getBoundingClientRect();
+    
+    resizeStartWidth = rect.width / scale;
+    resizeStartHeight = rect.height / scale;
+}
+
+function getSnapReferences(draggedEl) {
+    const refsX = new Map();
+    const refsY = new Map();
+
+    // 1. Poster Center & Quarters
+    refsX.set(297.5, 'poster-center');
+    refsX.set(148.75, 'poster-quarter-1');
+    refsX.set(446.25, 'poster-quarter-3');
+
+    refsY.set(421, 'poster-center');
+    refsY.set(210.5, 'poster-quarter-1');
+    refsY.set(631.5, 'poster-quarter-3');
+
+    // 2. Edges and Centers of other visible draggable boxes
+    DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || el === draggedEl) return;
+        
+        if (el.style.display === 'none' || el.classList.contains('hidden')) return;
+
+        const left = parseFloat(el.style.left) || 0;
+        const top = parseFloat(el.style.top) || 0;
+        const width = el.offsetWidth;
+        const height = el.offsetHeight;
+        
+        const right = left + width;
+        const bottom = top + height;
+        const cx = left + width / 2;
+        const cy = top + height / 2;
+
+        refsX.set(left, id);
+        refsX.set(right, id);
+        refsX.set(cx, id);
+
+        refsY.set(top, id);
+        refsY.set(bottom, id);
+        refsY.set(cy, id);
+    });
+
+    return { refsX, refsY };
+}
+
 function getPosterScale() {
     const scaleWrapper = document.getElementById('poster-scale-wrapper');
     if (!scaleWrapper) return 1;
@@ -1712,6 +1796,30 @@ function toggleAdvancedLayout(active) {
     if (resetBtn) {
         if (active) resetBtn.classList.remove('hidden');
         else resetBtn.classList.add('hidden');
+    }
+
+    const poster = document.getElementById('cyber-poster');
+    if (poster) {
+        let guideV = document.getElementById('guide-line-v');
+        let guideH = document.getElementById('guide-line-h');
+        
+        if (active) {
+            if (!guideV) {
+                guideV = document.createElement('div');
+                guideV.id = 'guide-line-v';
+                guideV.className = 'guide-line guide-line-v no-print hidden';
+                poster.appendChild(guideV);
+            }
+            if (!guideH) {
+                guideH = document.createElement('div');
+                guideH.id = 'guide-line-h';
+                guideH.className = 'guide-line guide-line-h no-print hidden';
+                poster.appendChild(guideH);
+            }
+        } else {
+            if (guideV) guideV.remove();
+            if (guideH) guideH.remove();
+        }
     }
 
     DRAGGABLE_IDS.forEach(id => {
@@ -1735,16 +1843,23 @@ function toggleAdvancedLayout(active) {
                 el.style.bottom = 'auto';
                 el.style.margin = '0';
             }
+            ensureResizeHandle(el);
         } else {
             el.classList.remove('adv-draggable');
             el.classList.remove('adv-dragging');
+            el.classList.remove('adv-resizing');
             
             el.style.position = '';
             el.style.top = '';
             el.style.left = '';
+            el.style.width = '';
+            el.style.height = '';
             el.style.right = '';
             el.style.bottom = '';
             el.style.margin = '';
+
+            const handle = el.querySelector('.resize-handle');
+            if (handle) handle.remove();
         }
     });
 
@@ -1764,7 +1879,9 @@ function getAdvancedLayoutPositions() {
         if (el && el.style.position === 'absolute') {
             positions[id] = {
                 top: parseFloat(el.style.top) || 0,
-                left: parseFloat(el.style.left) || 0
+                left: parseFloat(el.style.left) || 0,
+                width: el.style.width || '',
+                height: el.style.height || ''
             };
         }
     });
@@ -1789,9 +1906,13 @@ function applyAdvancedLayoutPositions(positions) {
         el.style.position = 'absolute';
         el.style.top = positions[id].top + 'px';
         el.style.left = positions[id].left + 'px';
+        if (positions[id].width) el.style.width = positions[id].width;
+        if (positions[id].height) el.style.height = positions[id].height;
         el.style.right = 'auto';
         el.style.bottom = 'auto';
         el.style.margin = '0';
+        
+        ensureResizeHandle(el);
     }
 }
 
@@ -1805,6 +1926,9 @@ function initDraggableEngine() {
 
         const startDrag = (e) => {
             if (!isAdvancedLayout) return;
+            
+            // Ignore if clicked on a resize-handle
+            if (e.target.classList.contains('resize-handle')) return;
             
             // Only drag on primary click or touch
             if (e.type === 'mousedown' && e.button !== 0) return;
@@ -1827,12 +1951,35 @@ function initDraggableEngine() {
     });
 
     const onMove = (e) => {
-        if (!activeDraggedElement) return;
+        if (!activeDraggedElement && !activeResizedElement) return;
 
         const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
         const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
         const scale = getPosterScale();
+
+        if (activeResizedElement) {
+            // Resizing logic
+            const dx = (clientX - resizeStartX) / scale;
+            const dy = (clientY - resizeStartY) / scale;
+            
+            let newWidth = resizeStartWidth + dx;
+            let newHeight = resizeStartHeight + dy;
+            
+            if (newWidth < 50) newWidth = 50;
+            if (newHeight < 20) newHeight = 20;
+            
+            const left = parseFloat(activeResizedElement.style.left) || 0;
+            const top = parseFloat(activeResizedElement.style.top) || 0;
+            if (left + newWidth > 595) newWidth = 595 - left;
+            if (top + newHeight > 842) newHeight = 842 - top;
+            
+            activeResizedElement.style.width = newWidth + 'px';
+            activeResizedElement.style.height = newHeight + 'px';
+            return;
+        }
+
+        // Draggable move logic (with snapping!)
         const dx = (clientX - dragStartX) / scale;
         const dy = (clientY - dragStartY) / scale;
 
@@ -1843,6 +1990,97 @@ function initDraggableEngine() {
         const elWidth = rect.width / scale;
         const elHeight = rect.height / scale;
 
+        // Snapping calculations
+        const snapThreshold = 8;
+        const { refsX, refsY } = getSnapReferences(activeDraggedElement);
+
+        let bestSnapX = null;
+        let bestSnapDistX = Infinity;
+        let snapXType = '';
+
+        for (const [refX, source] of refsX) {
+            const distLeft = Math.abs(newLeft - refX);
+            if (distLeft < snapThreshold && distLeft < bestSnapDistX) {
+                bestSnapDistX = distLeft;
+                bestSnapX = refX;
+                snapXType = 'left';
+            }
+            const distRight = Math.abs((newLeft + elWidth) - refX);
+            if (distRight < snapThreshold && distRight < bestSnapDistX) {
+                bestSnapDistX = distRight;
+                bestSnapX = refX;
+                snapXType = 'right';
+            }
+            const distCenter = Math.abs((newLeft + elWidth / 2) - refX);
+            if (distCenter < snapThreshold && distCenter < bestSnapDistX) {
+                bestSnapDistX = distCenter;
+                bestSnapX = refX;
+                snapXType = 'center';
+            }
+        }
+
+        if (bestSnapX !== null) {
+            if (snapXType === 'left') {
+                newLeft = bestSnapX;
+            } else if (snapXType === 'right') {
+                newLeft = bestSnapX - elWidth;
+            } else if (snapXType === 'center') {
+                newLeft = bestSnapX - elWidth / 2;
+            }
+            const guideV = document.getElementById('guide-line-v');
+            if (guideV) {
+                guideV.style.left = bestSnapX + 'px';
+                guideV.classList.remove('hidden');
+            }
+        } else {
+            const guideV = document.getElementById('guide-line-v');
+            if (guideV) guideV.classList.add('hidden');
+        }
+
+        let bestSnapY = null;
+        let bestSnapDistY = Infinity;
+        let snapYType = '';
+
+        for (const [refY, source] of refsY) {
+            const distTop = Math.abs(newTop - refY);
+            if (distTop < snapThreshold && distTop < bestSnapDistY) {
+                bestSnapDistY = distTop;
+                bestSnapY = refY;
+                snapYType = 'top';
+            }
+            const distBottom = Math.abs((newTop + elHeight) - refY);
+            if (distBottom < snapThreshold && distBottom < bestSnapDistY) {
+                bestSnapDistY = distBottom;
+                bestSnapY = refY;
+                snapYType = 'bottom';
+            }
+            const distCenter = Math.abs((newTop + elHeight / 2) - refY);
+            if (distCenter < snapThreshold && distCenter < bestSnapDistY) {
+                bestSnapDistY = distCenter;
+                bestSnapY = refY;
+                snapYType = 'center';
+            }
+        }
+
+        if (bestSnapY !== null) {
+            if (snapYType === 'top') {
+                newTop = bestSnapY;
+            } else if (snapYType === 'bottom') {
+                newTop = bestSnapY - elHeight;
+            } else if (snapYType === 'center') {
+                newTop = bestSnapY - elHeight / 2;
+            }
+            const guideH = document.getElementById('guide-line-h');
+            if (guideH) {
+                guideH.style.top = bestSnapY + 'px';
+                guideH.classList.remove('hidden');
+            }
+        } else {
+            const guideH = document.getElementById('guide-line-h');
+            if (guideH) guideH.classList.add('hidden');
+        }
+
+        // Keep inside boundary
         if (newLeft < 0) newLeft = 0;
         if (newLeft + elWidth > 595) newLeft = 595 - elWidth;
         if (newTop < 0) newTop = 0;
@@ -1857,6 +2095,16 @@ function initDraggableEngine() {
             activeDraggedElement.classList.remove('adv-dragging');
             activeDraggedElement = null;
         }
+        if (activeResizedElement) {
+            activeResizedElement.classList.remove('adv-resizing');
+            activeResizedElement = null;
+        }
+        
+        // Hide guide lines
+        const guideV = document.getElementById('guide-line-v');
+        const guideH = document.getElementById('guide-line-h');
+        if (guideV) guideV.classList.add('hidden');
+        if (guideH) guideH.classList.add('hidden');
     };
 
     document.addEventListener('mousemove', onMove);
