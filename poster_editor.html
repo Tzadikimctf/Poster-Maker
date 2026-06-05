@@ -201,6 +201,25 @@
 
                 <!-- Tab Content: DESIGN -->
                 <div id="panel-design" class="p-6 space-y-6 hidden">
+                    <!-- Advanced Layout Mode Card -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-200" data-i18n="lbl-adv-layout">מצב פריסה מתקדם (Advanced Drag & Drop)</h3>
+                                <p class="text-[10px] text-slate-400 mt-0.5" data-i18n="desc-adv-layout">גרור ושחרר אלמנטים על הכרזה כדי לקבוע את מיקומם ידנית.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-advanced-layout" onchange="toggleAdvancedLayout(this.checked)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <button id="btn-reset-layout" onclick="resetAdvancedLayout()" class="w-full mt-3 py-1.5 bg-slate-950 border border-slate-850 hover:bg-slate-800 text-[11px] font-semibold text-slate-300 rounded transition hidden" data-i18n="btn-reset-layout">
+                            איפוס פריסה ידנית
+                        </button>
+                    </div>
+
+                    <hr class="border-slate-800">
+
                     <!-- Scalable Font Sizes (Solves Clipping) -->
                     <div>
                         <h3
@@ -537,6 +556,13 @@
                                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-emerald-600">
                                         </div>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between pl-1" id="logo-shadow-type-container">
+                                <span class="text-xs text-slate-400" data-i18n="lbl-shadow-style">סגנון אפקט:</span>
+                                <div class="flex bg-slate-900 border border-slate-700 p-0.5 rounded-lg">
+                                    <button type="button" id="btn-shadow-type-glow" onclick="setLogoShadowType('glow')" class="px-2.5 py-1 text-[10px] font-semibold bg-emerald-950/45 border border-emerald-500/30 text-emerald-400 rounded-md transition animate-none" data-i18n="btn-shadow-glow">הילה (Glow)</button>
+                                    <button type="button" id="btn-shadow-type-outline" onclick="setLogoShadowType('outline')" class="px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-200 rounded-md transition" data-i18n="btn-shadow-outline">מסגרת (Outline)</button>
                                 </div>
                             </div>
                             <div>
@@ -1095,7 +1121,7 @@
                     <div id="poster-logo-container" class="absolute z-30 transition-all duration-200"
                         style="display: block;">
                         <!-- Image loader for local file -->
-                        <img id="poster-logo" src="Biu_tzadik_nobackground.png" alt="לוגו" class="object-contain"
+                        <img id="poster-logo" src="Biu_tzadik_nobackground.png" alt="לוגו"
                             style="width: 95px; height: auto;" onerror="handleLogoError(this)">
                         <!-- Interactive SVG Fallback -->
                         <div id="poster-logo-svg-fallback" class="hidden" style="width: 95px; height: 95px;">
@@ -1153,7 +1179,7 @@
                             style="margin-top: 0px;">
 
                             <!-- Main Topic & Title -->
-                            <div class="mb-10 text-right">
+                            <div id="poster-title-container" class="mb-10 text-right">
                                 <h2 id="poster-title-1"
                                     class="poster-font-title text-black text-[36px] font-extrabold tracking-wide leading-tight drop-shadow-sm break-words">
                                     מבוא לסייבר:
@@ -1191,7 +1217,7 @@
                         </div>
 
                         <!-- Bottom Footer Section (Speaker Info and Avatar) -->
-                        <div class="relative h-[180px] flex items-end justify-between">
+                        <div id="poster-speaker-container" class="relative h-[180px] flex items-end justify-between">
 
                             <!-- Left Aligned Speaker Details -->
                             <div class="mb-4 text-right flex-1 pr-2 max-w-[340px]">

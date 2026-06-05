@@ -2,6 +2,7 @@ let currentBackgroundStyle = 'curves';
 let currentLogoPosition = 'top-right';
 let currentCyberOverlay = 'none';
 let currentLanguage = 'en';
+let currentLogoShadowType = 'glow';
 let customPresets = {};
 
 // Built-in presets stored directly in script to bypass offline CORS file blocks
@@ -482,6 +483,27 @@ function applyCyberOverlay(overlayName) {
     }
 }
 
+// Logo Shadow Type Selector
+function setLogoShadowType(type) {
+    currentLogoShadowType = type;
+
+    // Highlight active control button
+    const btnGlow = document.getElementById('btn-shadow-type-glow');
+    const btnOutline = document.getElementById('btn-shadow-type-outline');
+    
+    if (btnGlow && btnOutline) {
+        if (type === 'glow') {
+            btnGlow.className = "px-2.5 py-1 text-[10px] font-semibold bg-emerald-950/45 border border-emerald-500/30 text-emerald-400 rounded-md transition animate-none";
+            btnOutline.className = "px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-200 rounded-md transition";
+        } else {
+            btnOutline.className = "px-2.5 py-1 text-[10px] font-semibold bg-emerald-950/45 border border-emerald-500/30 text-emerald-400 rounded-md transition animate-none";
+            btnGlow.className = "px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:text-slate-200 rounded-md transition";
+        }
+    }
+
+    updateLogoBackground();
+}
+
 // Logo Background Toggle
 function updateLogoBackground() {
     const hasBg = document.getElementById('toggle-logo-bg').checked;
@@ -500,14 +522,21 @@ function updateLogoBackground() {
         logoCont.style.borderRadius = '12px';
         
         if (hasShadow) {
-            // Apply box-shadow to the container card
-            logoCont.style.boxShadow = `0 8px 24px ${shadowColor}50, 0 2px 8px ${shadowColor}30`;
+            if (currentLogoShadowType === 'glow') {
+                // Apply box-shadow to the container card
+                logoCont.style.boxShadow = `0 8px 24px ${shadowColor}50, 0 2px 8px ${shadowColor}30`;
+                logoCont.style.border = 'none';
+            } else { // outline
+                logoCont.style.border = `2px solid ${shadowColor}`;
+                logoCont.style.boxShadow = 'none';
+            }
         } else {
+            logoCont.style.border = 'none';
             // Subtle gray shadow if no shadow color selected
             logoCont.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
         }
         
-        // Remove image filters since shadow is on the card container
+        // Remove image filters since shadow/border is on the card container
         if (logoImg) logoImg.style.filter = 'none';
         if (logoFallback) logoFallback.style.filter = 'none';
     } else {
@@ -515,10 +544,16 @@ function updateLogoBackground() {
         logoCont.style.padding = '0px';
         logoCont.style.borderRadius = '0px';
         logoCont.style.boxShadow = 'none';
+        logoCont.style.border = 'none';
         
         // 2. Handle drop-shadow directly on transparent logo shape
         if (hasShadow) {
-            const filterVal = `drop-shadow(0 0 8px ${shadowColor})`;
+            let filterVal;
+            if (currentLogoShadowType === 'glow') {
+                filterVal = `drop-shadow(0 0 8px ${shadowColor})`;
+            } else { // outline
+                filterVal = `drop-shadow(1.5px 0px 0px ${shadowColor}) drop-shadow(-1.5px 0px 0px ${shadowColor}) drop-shadow(0px 1.5px 0px ${shadowColor}) drop-shadow(0px -1.5px 0px ${shadowColor})`;
+            }
             if (logoImg) logoImg.style.filter = filterVal;
             if (logoFallback) logoFallback.style.filter = filterVal;
         } else {
@@ -814,6 +849,7 @@ function getCurrentStateAsPreset(name = "") {
         logoBgColor: document.getElementById('color-logo-bg').value,
         logoShadow: document.getElementById('toggle-logo-shadow').checked,
         logoShadowColor: document.getElementById('color-logo-shadow').value,
+        logoShadowType: currentLogoShadowType,
         logoPosition: currentLogoPosition,
         logoSize: parseInt(document.getElementById('logo-size').value),
 
@@ -836,12 +872,20 @@ function getCurrentStateAsPreset(name = "") {
         uiLanguage: currentLanguage,
         speakerImgSrc: document.getElementById('poster-speaker-img').getAttribute('src') || document.getElementById('poster-speaker-img').src,
         logoImgSrc: document.getElementById('poster-logo').getAttribute('src') || document.getElementById('poster-logo').src,
-        customBgStyle: currentBackgroundStyle === 'custom' ? BACKGROUND_STYLES.custom : undefined
+        customBgStyle: currentBackgroundStyle === 'custom' ? BACKGROUND_STYLES.custom : undefined,
+        advancedLayout: isAdvancedLayout ? getAdvancedLayoutPositions() : undefined
     };
 }
 
 function loadPresetState(preset) {
     if (!preset) return;
+
+    // Restore advanced layout if present
+    if (preset.advancedLayout) {
+        applyAdvancedLayoutPositions(preset.advancedLayout);
+    } else {
+        toggleAdvancedLayout(false);
+    }
 
     // Restore custom background paths if present in the preset
     if (preset.customBgStyle) {
@@ -884,6 +928,8 @@ function loadPresetState(preset) {
     document.getElementById('color-logo-bg').value = preset.logoBgColor || '#ffffff';
     document.getElementById('toggle-logo-shadow').checked = !!preset.logoShadow;
     document.getElementById('color-logo-shadow').value = preset.logoShadowColor || '#000000';
+    currentLogoShadowType = preset.logoShadowType || 'glow';
+    setLogoShadowType(currentLogoShadowType);
     document.getElementById('logo-size').value = preset.logoSize;
 
     // Apply colors
@@ -974,13 +1020,18 @@ function exportCurrentPreset() {
     const presetName = nameInput.value.trim() || document.getElementById('poster-speaker-name').innerText + "_preset";
     const preset = getCurrentStateAsPreset(presetName);
 
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(preset, null, 4));
+    const jsonString = JSON.stringify(preset, null, 4);
+    const blob = new Blob([jsonString], { type: "application/json;charset=utf-8;" });
+    const blobUrl = URL.createObjectURL(blob);
+
     const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", presetName.replace(/\s+/g, '_') + ".json");
+    downloadAnchor.href = blobUrl;
+    downloadAnchor.download = presetName.replace(/\s+/g, '_') + ".json";
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
-    downloadAnchor.remove();
+    
+    document.body.removeChild(downloadAnchor);
+    URL.revokeObjectURL(blobUrl);
 }
 
 // JSON file system imports
@@ -1067,13 +1118,17 @@ function resetToDefaults() {
     setLogoPosition(DEFAULTS.logoPosition);
     updateLogoScale(DEFAULTS.logoSize);
     updateLogoVisibility();
-    updateLogoBackground();
+    currentLogoShadowType = DEFAULTS.logoShadowType || 'glow';
+    setLogoShadowType(currentLogoShadowType);
 
     // Speaker original preset
     restoreOriginalSpeakerPreset();
     updatePoster();
     updateLayoutSizes();
     
+    // Reset Advanced Layout Mode
+    toggleAdvancedLayout(false);
+
     // Set UI language to English default on reset
     setUILanguage('en');
 }
@@ -1267,6 +1322,7 @@ async function getDirectoryHandle() {
 }
 
 async function selectPresetsDirectory() {
+    let fallbackNeeded = false;
     if ('showDirectoryPicker' in window) {
         try {
             const handle = await window.showDirectoryPicker({
@@ -1277,11 +1333,22 @@ async function selectPresetsDirectory() {
             const syncBtn = document.getElementById('btn-sync-folder-action');
             if (syncBtn) syncBtn.classList.remove('hidden');
         } catch (err) {
-            console.warn('Directory picking cancelled or failed:', err);
+            console.warn('Directory picking failed or was cancelled:', err);
+            // If the failure is due to context restrictions (e.g. security/file:// protocol), fall back.
+            // AbortError means the user manually cancelled the picker, so do not trigger the fallback.
+            if (err.name !== 'AbortError') {
+                fallbackNeeded = true;
+            }
         }
     } else {
+        fallbackNeeded = true;
+    }
+
+    if (fallbackNeeded) {
         const folderInput = document.getElementById('input-preset-folder');
-        if (folderInput) folderInput.click();
+        if (folderInput) {
+            folderInput.click();
+        }
     }
 }
 
@@ -1473,6 +1540,27 @@ async function checkPersistedDirectory() {
     }
 }
 
+// Fallback text copying function for non-secure contexts like offline file:// protocol
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    let successful = false;
+    try {
+        successful = document.execCommand('copy');
+    } catch (err) {
+        console.error('Fallback copy error:', err);
+    } finally {
+        document.body.removeChild(textArea);
+    }
+    return successful;
+}
+
 /**
  * Copies the pre-formatted system prompt instructions for generative AI to the clipboard.
  */
@@ -1514,14 +1602,30 @@ Conform strictly to the following schema definition:
 - speakerImgSrc: "https://placehold.co/300x300/004124/71CCE7?text=Speaker" (adjust colors to match secondary/primary).
 - logoImgSrc: "Biu_tzadik_nobackground.png".`;
 
-    navigator.clipboard.writeText(promptText).then(() => {
-        const msg = currentLanguage === 'he' 
-            ? 'הנחיית הבינה המלאכותית הועתקה ללוח!' 
-            : 'AI prompt copied to clipboard!';
-        alert(msg);
-    }).catch(err => {
-        console.error('Failed to copy prompt:', err);
-    });
+    const successMsg = currentLanguage === 'he' 
+        ? 'הנחיית הבינה המלאכותית הועתקה ללוח!' 
+        : 'AI prompt copied to clipboard!';
+    const failMsg = currentLanguage === 'he'
+        ? 'שגיאה בהעתקת הטקסט. נא להעתיק ידנית.'
+        : 'Failed to copy prompt. Please copy it manually.';
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(promptText).then(() => {
+            alert(successMsg);
+        }).catch(err => {
+            if (fallbackCopyTextToClipboard(promptText)) {
+                alert(successMsg);
+            } else {
+                alert(failMsg);
+            }
+        });
+    } else {
+        if (fallbackCopyTextToClipboard(promptText)) {
+            alert(successMsg);
+        } else {
+            alert(failMsg);
+        }
+    }
 }
 
 /**
@@ -1575,6 +1679,192 @@ function loadPastedPreset() {
     }
 }
 
+// Advanced Layout Mode Engine & Drag-and-Drop Implementation
+let isAdvancedLayout = false;
+const DRAGGABLE_IDS = [
+    'poster-logo-container', 
+    'container-callout-left', 
+    'container-callout-right', 
+    'poster-title-container', 
+    'poster-details-container', 
+    'poster-speaker-container'
+];
+
+let activeDraggedElement = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartLeft = 0;
+let dragStartTop = 0;
+
+function getPosterScale() {
+    const scaleWrapper = document.getElementById('poster-scale-wrapper');
+    if (!scaleWrapper) return 1;
+    const match = scaleWrapper.style.transform.match(/scale\(([^)]+)\)/);
+    return match ? parseFloat(match[1]) : 1;
+}
+
+function toggleAdvancedLayout(active) {
+    isAdvancedLayout = active;
+    const checkbox = document.getElementById('toggle-advanced-layout');
+    if (checkbox) checkbox.checked = active;
+
+    const resetBtn = document.getElementById('btn-reset-layout');
+    if (resetBtn) {
+        if (active) resetBtn.classList.remove('hidden');
+        else resetBtn.classList.add('hidden');
+    }
+
+    DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        if (active) {
+            el.classList.add('adv-draggable');
+            if (!el.style.top || el.style.position !== 'absolute') {
+                const rect = el.getBoundingClientRect();
+                const parentRect = document.getElementById('cyber-poster').getBoundingClientRect();
+                const scale = getPosterScale();
+                
+                const top = (rect.top - parentRect.top) / scale;
+                const left = (rect.left - parentRect.left) / scale;
+
+                el.style.position = 'absolute';
+                el.style.top = top + 'px';
+                el.style.left = left + 'px';
+                el.style.right = 'auto';
+                el.style.bottom = 'auto';
+                el.style.margin = '0';
+            }
+        } else {
+            el.classList.remove('adv-draggable');
+            el.classList.remove('adv-dragging');
+            
+            el.style.position = '';
+            el.style.top = '';
+            el.style.left = '';
+            el.style.right = '';
+            el.style.bottom = '';
+            el.style.margin = '';
+        }
+    });
+
+    if (!active) {
+        setLogoPosition(currentLogoPosition);
+    }
+}
+
+function resetAdvancedLayout() {
+    toggleAdvancedLayout(false);
+}
+
+function getAdvancedLayoutPositions() {
+    const positions = {};
+    DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.style.position === 'absolute') {
+            positions[id] = {
+                top: parseFloat(el.style.top) || 0,
+                left: parseFloat(el.style.left) || 0
+            };
+        }
+    });
+    return positions;
+}
+
+function applyAdvancedLayoutPositions(positions) {
+    if (!positions) return;
+    
+    isAdvancedLayout = true;
+    const checkbox = document.getElementById('toggle-advanced-layout');
+    if (checkbox) checkbox.checked = true;
+    
+    const resetBtn = document.getElementById('btn-reset-layout');
+    if (resetBtn) resetBtn.classList.remove('hidden');
+
+    for (const id in positions) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+
+        el.classList.add('adv-draggable');
+        el.style.position = 'absolute';
+        el.style.top = positions[id].top + 'px';
+        el.style.left = positions[id].left + 'px';
+        el.style.right = 'auto';
+        el.style.bottom = 'auto';
+        el.style.margin = '0';
+    }
+}
+
+function initDraggableEngine() {
+    const poster = document.getElementById('cyber-poster');
+    if (!poster) return;
+
+    DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        const startDrag = (e) => {
+            if (!isAdvancedLayout) return;
+            
+            // Only drag on primary click or touch
+            if (e.type === 'mousedown' && e.button !== 0) return;
+
+            e.preventDefault();
+            activeDraggedElement = el;
+            el.classList.add('adv-dragging');
+
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+
+            dragStartX = clientX;
+            dragStartY = clientY;
+            dragStartLeft = parseFloat(el.style.left) || 0;
+            dragStartTop = parseFloat(el.style.top) || 0;
+        };
+
+        el.addEventListener('mousedown', startDrag);
+        el.addEventListener('touchstart', startDrag, { passive: false });
+    });
+
+    const onMove = (e) => {
+        if (!activeDraggedElement) return;
+
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+
+        const scale = getPosterScale();
+        const dx = (clientX - dragStartX) / scale;
+        const dy = (clientY - dragStartY) / scale;
+
+        let newLeft = dragStartLeft + dx;
+        let newTop = dragStartTop + dy;
+
+        const rect = activeDraggedElement.getBoundingClientRect();
+        const elWidth = rect.width / scale;
+        const elHeight = rect.height / scale;
+
+        if (newLeft < 0) newLeft = 0;
+        if (newLeft + elWidth > 595) newLeft = 595 - elWidth;
+        if (newTop < 0) newTop = 0;
+        if (newTop + elHeight > 842) newTop = 842 - elHeight;
+
+        activeDraggedElement.style.left = newLeft + 'px';
+        activeDraggedElement.style.top = newTop + 'px';
+    };
+
+    const onEnd = () => {
+        if (activeDraggedElement) {
+            activeDraggedElement.classList.remove('adv-dragging');
+            activeDraggedElement = null;
+        }
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
+}
+
 // Listeners and kick off triggers
 window.addEventListener('resize', adjustPosterScale);
 
@@ -1583,4 +1873,5 @@ window.onload = function () {
     populatePresetDropdown();
     adjustPosterScale();
     checkPersistedDirectory();
+    initDraggableEngine();
 }

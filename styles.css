@@ -97,3 +97,25 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
 }
+
+/* Advanced Layout Mode Draggable Styles */
+.adv-draggable {
+    cursor: move;
+    cursor: grab;
+    user-select: none;
+    transition: outline-color 0.15s, background-color 0.15s;
+    outline: 2px dashed rgba(99, 102, 241, 0.4); /* Indigo dashed outline */
+    outline-offset: 2px;
+}
+
+.adv-draggable:hover {
+    outline-color: rgba(99, 102, 241, 0.8);
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.adv-dragging {
+    cursor: grabbing !important;
+    outline-color: rgba(99, 102, 241, 1) !important;
+    background-color: rgba(99, 102, 241, 0.1) !important;
+    z-index: 40 !important; /* Ensure dragged element is on top */
+}
