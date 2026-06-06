@@ -44,8 +44,10 @@ function downloadPNG() {
         allowTaint: true,
         backgroundColor: primaryColor
     }).then(canvas => {
+        const speakerLayer = layers.find(l => l.id === 'layer_speaker_name');
+        const speakerName = (speakerLayer && speakerLayer.text) ? speakerLayer.text : 'Speaker';
         const link = document.createElement('a');
-        link.download = `Cyber_Poster_${document.getElementById('input-speaker-name').value.replace(/\s+/g, '_')}.png`;
+        link.download = `Cyber_Poster_${speakerName.replace(/\s+/g, '_')}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
         msgBox.remove();
@@ -118,8 +120,8 @@ function printPoster() {
         
         // A4 page is exactly 210mm x 297mm
         pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-        
-        const speakerName = document.getElementById('input-speaker-name').value || 'Speaker';
+        const speakerLayer = layers.find(l => l.id === 'layer_speaker_name');
+        const speakerName = (speakerLayer && speakerLayer.text) ? speakerLayer.text : 'Speaker';
         const fileName = `Cyber_Poster_${speakerName.replace(/\s+/g, '_')}.pdf`;
         pdf.save(fileName);
         msgBox.remove();

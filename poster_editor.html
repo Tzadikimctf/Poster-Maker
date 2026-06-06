@@ -118,98 +118,8 @@
 
                 <!-- Scrollable Tab Content Panels -->
                 <div class="flex-1 overflow-y-auto">
-                <div id="panel-content" class="p-6 space-y-6">
-                    <!-- Top Callouts -->
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"
-                            data-i18n="sec-callouts">קריאות עליונות לפעולה</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-callout-left">בלון שמאלי
-                                    (רקע בהיר):</label>
-                                <textarea id="input-callout-left" oninput="updatePoster()" rows="2"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-callout-right">בלון ימני
-                                    (רקע כהה):</label>
-                                <textarea id="input-callout-right" oninput="updatePoster()" rows="2"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="border-slate-800">
-
-                    <!-- Title and Topic -->
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"
-                            data-i18n="sec-title">כותרת ההרצאה</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-title-1">שורת כותרת
-                                    1:</label>
-                                <input type="text" id="input-title-1" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-title-2">שורת כותרת
-                                    2:</label>
-                                <input type="text" id="input-title-2" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="border-slate-800">
-
-                    <!-- Date and Location Info -->
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"
-                            data-i18n="sec-details">פרטי אירוע ומיקום</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-date">תאריך
-                                    ויום:</label>
-                                <input type="text" id="input-date" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-time">שעות
-                                    פעילות:</label>
-                                <input type="text" id="input-time" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-location">מיקום
-                                    וחדר:</label>
-                                <input type="text" id="input-location" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="border-slate-800">
-
-                    <!-- Speaker Info -->
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"
-                            data-i18n="sec-speaker">פרטי המרצה</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-speaker-name">שם
-                                    המרצה:</label>
-                                <input type="text" id="input-speaker-name" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1" data-i18n="lbl-speaker-role">תפקיד /
-                                    חברה:</label>
-                                <input type="text" id="input-speaker-role" oninput="updatePoster()"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
+                <div id="panel-content" class="p-6 space-y-4">
+                    <!-- Standard editor fields are dynamically rendered here -->
                 </div>
 
                 <!-- Tab Content: DESIGN -->
@@ -222,7 +132,7 @@
                                 <p class="text-[10px] text-slate-400 mt-0.5" data-i18n="desc-adv-layout">גרור ושחרר אלמנטים על הכרזה כדי לקבוע את מיקומם ידנית.</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="toggle-advanced-layout" onchange="toggleAdvancedLayout(this.checked)" class="sr-only peer">
+                                <input type="checkbox" id="toggle-advanced-layout" onchange="setSidebarMode(this.checked ? 'advanced' : 'standard')" class="sr-only peer">
                                 <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-indigo-600"></div>
                             </label>
                         </div>
@@ -1183,11 +1093,27 @@
     <!-- Modular Config & Logic Scripts -->
     <script src="config.js"></script>
     <script src="js/state.js"></script>
-    <script src="js/ui.js"></script>
+    <script src="js/ui/tabs.js"></script>
+    <script src="js/ui/colors.js"></script>
+    <script src="js/ui/sync.js"></script>
+    <script src="js/ui/layers-editor.js"></script>
+    <script src="js/ui/layers-list.js"></script>
     <script src="js/logo-speaker.js"></script>
     <script src="js/presets-db.js"></script>
     <script src="js/layers-engine.js"></script>
     <script src="js/drag-drop.js"></script>
+    <!-- Non-blocking Custom Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm hidden no-print">
+        <div class="bg-slate-950 border border-slate-800 p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4">
+            <h3 class="text-sm font-bold text-white mb-2" id="confirm-modal-title">מחיקת שכבה</h3>
+            <p class="text-xs text-slate-400 mb-6" id="confirm-modal-message">האם אתה בטוח שברצונך למחוק שכבה זו?</p>
+            <div class="flex justify-end gap-3">
+                <button id="confirm-modal-btn-cancel" class="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition border border-slate-700">ביטול</button>
+                <button id="confirm-modal-btn-confirm" class="px-4 py-2 text-xs font-semibold bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900 rounded-lg transition">מחק</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/export.js"></script>
     <script src="app.js"></script>
 </body>

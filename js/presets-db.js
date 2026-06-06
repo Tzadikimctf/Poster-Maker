@@ -7,34 +7,48 @@ function populatePresetDropdown(activeValue = "") {
     const prevVal = select.value;
     select.innerHTML = '';
 
-    // Built-ins
-    for (const key in BUILT_IN_PRESETS) {
-        const opt = document.createElement('option');
-        opt.value = "built-in:" + key;
-        opt.textContent = key.includes('-he') ? `ערכה מובנית: ${key.replace('-he', ' עברית')}` : `Built-in: ${key.replace('-en', ' English')}`;
-        select.appendChild(opt);
-    }
-
-    // In-memory saves
     const customKeys = Object.keys(customPresets);
-    if (customKeys.length > 0) {
-        const divider = document.createElement('option');
-        divider.disabled = true;
-        divider.textContent = currentLanguage === 'he' ? '─── שמור בזיכרון ───' : '─── Saved in Memory ───';
-        select.appendChild(divider);
+    const hasFolderPresets = customKeys.length > 0;
+
+    if (!hasFolderPresets) {
+        const gpStandard = document.createElement('optgroup');
+        gpStandard.label = currentLanguage === 'he' ? 'ערכות עיצוב מובנות' : 'Built-in Presets';
+
+        for (const key in BUILT_IN_PRESETS) {
+            const opt = document.createElement('option');
+            opt.value = "built-in:" + key;
+            opt.textContent = key.includes('-he') ? `ערכה מובנית: ${key.replace('-he', ' עברית')}` : `Built-in: ${key.replace('-en', ' English')}`;
+            gpStandard.appendChild(opt);
+        }
+        select.appendChild(gpStandard);
+    } else {
+        const gpFolder = document.createElement('optgroup');
+        gpFolder.label = currentLanguage === 'he' ? 'ערכות עיצוב מהתיקייה' : 'Folder Presets';
 
         customKeys.forEach(name => {
             const opt = document.createElement('option');
             opt.value = "custom:" + name;
             opt.textContent = name;
-            select.appendChild(opt);
+            gpFolder.appendChild(opt);
         });
+        select.appendChild(gpFolder);
     }
 
-    if (activeValue) {
+    if (activeValue && select.querySelector(`option[value="${activeValue}"]`)) {
         select.value = activeValue;
     } else if (prevVal && select.querySelector(`option[value="${prevVal}"]`)) {
         select.value = prevVal;
+    } else {
+        if (!hasFolderPresets) {
+            const defaultKey = "built-in:tzadik-" + currentLanguage;
+            if (select.querySelector(`option[value="${defaultKey}"]`)) {
+                select.value = defaultKey;
+            }
+        } else {
+            const firstCustomKey = "custom:" + customKeys[0];
+            select.value = firstCustomKey;
+            handlePresetSelect(firstCustomKey);
+        }
     }
 }
 
@@ -202,11 +216,25 @@ function loadPresetState(preset) {
 
     // 3. Update Standard Tab UI Inputs to match active layer values
     syncStandardDOMInputs();
+    if (typeof renderStandardContentFields === 'function') {
+        renderStandardContentFields();
+    }
 
     // Trigger full layers redraw
     toggleAdvancedLayout(isAdvancedLayout);
     if (isAdvancedLayout) {
         populateAdvancedLayersList();
+    } else {
+        if (typeof captureSimpleModePositions === 'function') {
+            captureSimpleModePositions();
+        }
+    }
+
+    if (typeof updateColors === 'function') {
+        updateColors();
+    }
+    if (typeof adjustPosterScale === 'function') {
+        adjustPosterScale();
     }
 }
 
@@ -407,16 +435,7 @@ function resetToDefaults() {
         logo.size.height = DEFAULTS.logoSize;
     }
 
-    // Text values in DOM
-    document.getElementById('input-callout-left').value = DEFAULTS.calloutLeft;
-    document.getElementById('input-callout-right').value = DEFAULTS.calloutRight;
-    document.getElementById('input-title-1').value = DEFAULTS.title1;
-    document.getElementById('input-title-2').value = DEFAULTS.title2;
-    document.getElementById('input-date').value = DEFAULTS.date;
-    document.getElementById('input-time').value = DEFAULTS.time;
-    document.getElementById('input-location').value = DEFAULTS.location;
-    document.getElementById('input-speaker-name').value = DEFAULTS.speakerName;
-    document.getElementById('input-speaker-role').value = DEFAULTS.speakerRole;
+    // Text values are managed dynamically via the layers array model
 
     // Font Sizes Sliders
     document.getElementById('slider-fz-title').value = DEFAULTS.fzTitle;

@@ -148,11 +148,25 @@ function renderPosterLayers() {
         // Draw selection boundaries & drag styles if Advanced Mode is active
         if (isAdvancedLayout) {
             wrapper.classList.add('adv-draggable');
+
+            // Visual lock feedback
+            if (layer.locked) {
+                wrapper.style.cursor = 'not-allowed';
+                wrapper.style.opacity = '0.85';
+            }
+
             if (selectedLayerId === layer.id) {
                 wrapper.classList.add('adv-selected');
-                wrapper.style.outline = '2px solid #ec4899'; // Selected layer highlighted in Pink
+                if (layer.locked) {
+                    wrapper.style.outline = '2px solid #f59e0b'; // Amber outline for locked layers
+                } else {
+                    wrapper.style.outline = '2px solid #ec4899'; // Pink outline for unlocked
+                }
                 wrapper.style.outlineOffset = '2px';
-                ensureResizeHandle(wrapper);
+                // Only add resize handle to unlocked layers
+                if (!layer.locked) {
+                    ensureResizeHandle(wrapper);
+                }
             }
         }
 
@@ -300,5 +314,126 @@ function renderPosterLayers() {
         }
 
         container.appendChild(wrapper);
+    });
+}
+
+// Captures and updates all layers' left/top/width/height with their visual values in simple mode
+function captureSimpleModePositions() {
+    const verticalShift = parseInt(document.getElementById('slider-vertical-shift')?.value || 0);
+    const layoutDirection = document.getElementById('cyber-poster')?.getAttribute('dir') || 'rtl';
+    const isRtl = layoutDirection === 'rtl';
+
+    let logoOffsetLeft = 0;
+    let logoOffsetRight = 0;
+    let logoOffsetBottomLeft = 0;
+
+    const logoLayer = layers.find(l => l.id === 'layer_logo_1');
+    if (logoLayer && logoLayer.visible) {
+        const logoSize = logoLayer.size.width;
+        const logoBgEl = document.getElementById('toggle-logo-bg');
+        const extraPadding = (logoBgEl && logoBgEl.checked) ? 16 : 0;
+        const totalLogoWidth = logoSize + extraPadding + 24;
+
+        if (currentLogoPosition === 'top-left') {
+            logoOffsetLeft = totalLogoWidth;
+        } else if (currentLogoPosition === 'top-right') {
+            logoOffsetRight = totalLogoWidth;
+        } else if (currentLogoPosition === 'bottom-left') {
+            logoOffsetBottomLeft = totalLogoWidth;
+        }
+    }
+
+    const title1Layer = layers.find(l => l.id === 'layer_title_1');
+    const title1Fz = (title1Layer && title1Layer.visible) ? title1Layer.fontSize : 36;
+    
+    const title2Layer = layers.find(l => l.id === 'layer_title_2');
+    const title2Fz = (title2Layer && title2Layer.visible) ? title2Layer.fontSize : 34;
+
+    const dateLayer = layers.find(l => l.id === 'layer_date');
+    const dateFz = (dateLayer && dateLayer.visible) ? dateLayer.fontSize : 19;
+
+    const timeLayer = layers.find(l => l.id === 'layer_time');
+    const timeFz = (timeLayer && timeLayer.visible) ? timeLayer.fontSize : 19;
+
+    const title1Top = 250 + verticalShift;
+    const title2Top = title1Top + title1Fz + 14;
+    const dateTop = title2Top + title2Fz + 46;
+    const timeTop = dateTop + dateFz + 21;
+    const locationTop = timeTop + timeFz + 21;
+
+    layers.forEach(layer => {
+        let left = layer.position.left;
+        let top = layer.position.top;
+        let width = layer.size.width;
+        let height = layer.size.height;
+
+        if (layer.id === 'layer_logo_1') {
+            if (currentLogoPosition === 'top-left') {
+                left = 32;
+                top = 32;
+            } else if (currentLogoPosition === 'top-right') {
+                left = 595 - 32 - width;
+                top = 32;
+            } else if (currentLogoPosition === 'bottom-left') {
+                left = 32;
+                top = 842 - 32 - height;
+            }
+        } else if (layer.id === 'layer_callout_left') {
+            left = 32 + logoOffsetLeft;
+            top = currentLogoPosition === 'top-left' ? 44 : 32;
+            width = 230 - (currentLogoPosition === 'top-left' ? 16 : 0);
+        } else if (layer.id === 'layer_callout_right') {
+            left = 595 - 32 - width - logoOffsetRight;
+            top = currentLogoPosition === 'top-right' ? 44 : 32;
+            width = 240 - (currentLogoPosition === 'top-right' ? 16 : 0);
+        } else if (layer.id === 'layer_title_1') {
+            left = 32;
+            top = title1Top;
+            width = 531;
+        } else if (layer.id === 'layer_title_2') {
+            left = 32;
+            top = title2Top;
+            width = 531;
+        } else if (layer.id === 'layer_date') {
+            left = 32;
+            top = dateTop;
+            width = 531;
+        } else if (layer.id === 'layer_time') {
+            left = 32;
+            top = timeTop;
+            width = 531;
+        } else if (layer.id === 'layer_location') {
+            left = 32;
+            top = locationTop;
+            width = 531;
+        } else if (layer.id === 'layer_speaker_portrait') {
+            if (isRtl) {
+                left = 413;
+            } else {
+                left = 32 + logoOffsetBottomLeft;
+            }
+            top = 640;
+        } else if (layer.id === 'layer_speaker_name') {
+            if (isRtl) {
+                left = 32 + logoOffsetBottomLeft;
+            } else {
+                left = 213 + logoOffsetBottomLeft;
+            }
+            top = 660;
+            width = 340 - logoOffsetBottomLeft;
+        } else if (layer.id === 'layer_speaker_role') {
+            if (isRtl) {
+                left = 32 + logoOffsetBottomLeft;
+            } else {
+                left = 213 + logoOffsetBottomLeft;
+            }
+            top = 700;
+            width = 340 - logoOffsetBottomLeft;
+        }
+
+        layer.position.left = Math.round(left);
+        layer.position.top = Math.round(top);
+        layer.size.width = Math.round(width);
+        layer.size.height = Math.round(height);
     });
 }

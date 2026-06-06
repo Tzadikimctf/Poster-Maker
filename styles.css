@@ -139,7 +139,6 @@ body {
 /* Alignment Guide Lines */
 .guide-line {
     position: absolute;
-    background-color: #ec4899; /* Pink-500 */
     pointer-events: none;
     z-index: 90;
     transition: opacity 0.1s;
@@ -153,4 +152,26 @@ body {
     height: 1.5px;
     left: 0;
     right: 0;
+}
+
+/* 1. Center / Half Page (Neon Cyan) */
+.guide-line.guide-snap-center {
+    background-color: #06b6d4;
+    box-shadow: 0 0 6px #06b6d4;
+}
+
+/* 2. Quarter Page (Violet/Magenta repeating dashed) */
+.guide-line.guide-snap-quarter.guide-line-v {
+    background: repeating-linear-gradient(to bottom, #d946ef 0, #d946ef 6px, transparent 6px, transparent 12px);
+}
+.guide-line.guide-snap-quarter.guide-line-h {
+    background: repeating-linear-gradient(to right, #d946ef 0, #d946ef 6px, transparent 6px, transparent 12px);
+}
+
+/* 3. Layer block alignment (Pink dotted) */
+.guide-line.guide-snap-layer.guide-line-v {
+    background: repeating-linear-gradient(to bottom, #ec4899 0, #ec4899 3px, transparent 3px, transparent 6px);
+}
+.guide-line.guide-snap-layer.guide-line-h {
+    background: repeating-linear-gradient(to right, #ec4899 0, #ec4899 3px, transparent 3px, transparent 6px);
 }

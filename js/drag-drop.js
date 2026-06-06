@@ -19,6 +19,11 @@ function ensureResizeHandle(el) {
 function initResize(e, el) {
     e.preventDefault();
     e.stopPropagation();
+
+    // Skip resize if layer is locked
+    const layerId = el.dataset.layerId;
+    const layer = layers.find(l => l.id === layerId);
+    if (layer && layer.locked) return;
     
     activeResizedElement = el;
     el.classList.add('adv-resizing');
@@ -30,8 +35,6 @@ function initResize(e, el) {
     resizeStartY = clientY;
     
     const scale = getPosterScale();
-    const layerId = el.dataset.layerId;
-    const layer = layers.find(l => l.id === layerId);
     if (layer) {
         resizeStartWidth = layer.size.width;
         resizeStartHeight = layer.size.height;
@@ -150,6 +153,10 @@ function initDraggableEngine() {
         if (!wrapper) return;
 
         const layerId = wrapper.dataset.layerId;
+
+        // Skip drag if layer is locked
+        const layer = layers.find(l => l.id === layerId);
+        if (layer && layer.locked) return;
         
         // Ignore if clicked on a resize-handle
         if (e.target.classList.contains('resize-handle')) return;
@@ -175,7 +182,6 @@ function initDraggableEngine() {
         dragStartX = clientX;
         dragStartY = clientY;
 
-        const layer = layers.find(l => l.id === layerId);
         if (layer) {
             dragStartLeft = layer.position.left;
             dragStartTop = layer.position.top;
@@ -244,6 +250,7 @@ function initDraggableEngine() {
         let bestSnapX = null;
         let bestSnapDistX = Infinity;
         let snapXType = '';
+        let bestSnapSourceX = '';
 
         for (const [refX, source] of refsX) {
             const distLeft = Math.abs(newLeft - refX);
@@ -251,18 +258,21 @@ function initDraggableEngine() {
                 bestSnapDistX = distLeft;
                 bestSnapX = refX;
                 snapXType = 'left';
+                bestSnapSourceX = source;
             }
             const distRight = Math.abs((newLeft + elWidth) - refX);
             if (distRight < snapThreshold && distRight < bestSnapDistX) {
                 bestSnapDistX = distRight;
                 bestSnapX = refX;
                 snapXType = 'right';
+                bestSnapSourceX = source;
             }
             const distCenter = Math.abs((newLeft + elWidth / 2) - refX);
             if (distCenter < snapThreshold && distCenter < bestSnapDistX) {
                 bestSnapDistX = distCenter;
                 bestSnapX = refX;
                 snapXType = 'center';
+                bestSnapSourceX = source;
             }
         }
 
@@ -277,16 +287,28 @@ function initDraggableEngine() {
             const guideV = document.getElementById('guide-line-v');
             if (guideV) {
                 guideV.style.left = bestSnapX + 'px';
+                guideV.className = 'guide-line guide-line-v no-print';
+                if (bestSnapSourceX === 'poster-center') {
+                    guideV.classList.add('guide-snap-center');
+                } else if (bestSnapSourceX && bestSnapSourceX.startsWith('poster-quarter')) {
+                    guideV.classList.add('guide-snap-quarter');
+                } else {
+                    guideV.classList.add('guide-snap-layer');
+                }
                 guideV.classList.remove('hidden');
             }
         } else {
             const guideV = document.getElementById('guide-line-v');
-            if (guideV) guideV.classList.add('hidden');
+            if (guideV) {
+                guideV.classList.add('hidden');
+                guideV.className = 'guide-line guide-line-v no-print hidden';
+            }
         }
 
         let bestSnapY = null;
         let bestSnapDistY = Infinity;
         let snapYType = '';
+        let bestSnapSourceY = '';
 
         for (const [refY, source] of refsY) {
             const distTop = Math.abs(newTop - refY);
@@ -294,18 +316,21 @@ function initDraggableEngine() {
                 bestSnapDistY = distTop;
                 bestSnapY = refY;
                 snapYType = 'top';
+                bestSnapSourceY = source;
             }
             const distBottom = Math.abs((newTop + elHeight) - refY);
             if (distBottom < snapThreshold && distBottom < bestSnapDistY) {
                 bestSnapDistY = distBottom;
                 bestSnapY = refY;
                 snapYType = 'bottom';
+                bestSnapSourceY = source;
             }
             const distCenter = Math.abs((newTop + elHeight / 2) - refY);
             if (distCenter < snapThreshold && distCenter < bestSnapDistY) {
                 bestSnapDistY = distCenter;
                 bestSnapY = refY;
                 snapYType = 'center';
+                bestSnapSourceY = source;
             }
         }
 
@@ -320,11 +345,22 @@ function initDraggableEngine() {
             const guideH = document.getElementById('guide-line-h');
             if (guideH) {
                 guideH.style.top = bestSnapY + 'px';
+                guideH.className = 'guide-line guide-line-h no-print';
+                if (bestSnapSourceY === 'poster-center') {
+                    guideH.classList.add('guide-snap-center');
+                } else if (bestSnapSourceY && bestSnapSourceY.startsWith('poster-quarter')) {
+                    guideH.classList.add('guide-snap-quarter');
+                } else {
+                    guideH.classList.add('guide-snap-layer');
+                }
                 guideH.classList.remove('hidden');
             }
         } else {
             const guideH = document.getElementById('guide-line-h');
-            if (guideH) guideH.classList.add('hidden');
+            if (guideH) {
+                guideH.classList.add('hidden');
+                guideH.className = 'guide-line guide-line-h no-print hidden';
+            }
         }
 
         // Keep inside boundary
